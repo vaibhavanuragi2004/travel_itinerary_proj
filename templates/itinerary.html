@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Your Travel Itinerary - {{ itinerary.destination }} - TravelAI{% endblock %}
+
+{% block content %}
+<!-- Itinerary Header -->
+<section class="py-4 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    <i class="fas fa-map-marked-alt me-3"></i>{{ itinerary.destination }}
+                </h1>
+                <div class="itinerary-meta">
+                    <span class="badge bg-accent text-dark me-2">
+                        <i class="fas fa-calendar-alt me-1"></i>{{ itinerary.duration }} Days
+                    </span>
+                    <span class="badge bg-accent text-dark me-2">
+                        <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(itinerary.budget) }}
+                    </span>
+                    <span class="badge bg-accent text-dark">
+                        <i class="fas fa-clock me-1"></i>Created {{ itinerary.created_at.strftime('%b %d, %Y') }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-location-arrow me-2"></i>Track Progress
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Progress Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="progress-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-2"><i class="fas fa-chart-line me-2 text-primary"></i>Trip Progress</h5>
+                            <div class="progress progress-lg mb-2">
+                                <div class="progress-bar bg-success" style="width: {{ progress_percentage }}%"></div>
+                            </div>
+                            <small class="text-muted">
+                                {{ completed_checkpoints }} of {{ total_checkpoints }} checkpoints completed ({{ "%.1f"|format(progress_percentage) }}%)
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-number text-primary">{{ total_checkpoints }}</div>
+                                    <div class="stat-label">Total Stops</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number text-success">{{ completed_checkpoints }}</div>
+                                    <div class="stat-label">Completed</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number text-warning">{{ total_checkpoints - completed_checkpoints }}</div>
+                                    <div class="stat-label">Remaining</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Itinerary Content -->
+<section class="py-5">
+    <div class="container">
+        {% if itinerary.get_itinerary_data().get('overview') %}
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="fas fa-info-circle me-2"></i>Trip Overview
+                        </h4>
+                        <p class="card-text lead">{{ itinerary.get_itinerary_data().get('overview') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Daily Itinerary -->
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-primary mb-4">
+                    <i class="fas fa-calendar-week me-2"></i>Daily Itinerary
+                </h3>
+                
+                {% for day_num in range(1, itinerary.duration + 1) %}
+                <div class="day-card mb-4">
+                    <div class="day-header">
+                        <h4 class="day-title">
+                            <span class="day-number">{{ day_num }}</span>
+                            Day {{ day_num }}
+                            {% set day_data = days_data.get(day_num, []) %}
+                            {% if day_data %}
+                                {% set day_completed = day_data|selectattr('is_completed')|list|length %}
+                                {% set day_total = day_data|length %}
+                                <span class="day-progress">
+                                    {{ day_completed }}/{{ day_total }} completed
+                                </span>
+                            {% endif %}
+                        </h4>
+                    </div>
+                    
+                    <div class="day-content">
+                        {% if day_data %}
+                            {% for checkpoint in day_data %}
+                            <div class="checkpoint-card {{ 'completed' if checkpoint.is_completed else '' }}">
+                                <div class="checkpoint-time">
+                                    <i class="fas fa-clock me-2"></i>{{ checkpoint.time }}
+                                </div>
+                                <div class="checkpoint-content">
+                                    <div class="checkpoint-header">
+                                        <h6 class="checkpoint-location">
+                                            <i class="fas fa-map-marker-alt me-2"></i>{{ checkpoint.location }}
+                                        </h6>
+                                        {% if checkpoint.estimated_cost > 0 %}
+                                        <span class="checkpoint-cost">
+                                            <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(checkpoint.estimated_cost) }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="checkpoint-description">{{ checkpoint.activity }}</p>
+                                    
+                                    {% if checkpoint.is_completed %}
+                                        <div class="checkpoint-completed">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span class="text-success">Completed on {{ checkpoint.completed_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                                            {% if checkpoint.notes %}
+                                                <div class="mt-2">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-sticky-note me-1"></i>{{ checkpoint.notes }}
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <form action="{{ url_for('complete_checkpoint', checkpoint_id=checkpoint.id) }}" method="POST" class="checkpoint-form">
+                                            <div class="row align-items-end">
+                                                <div class="col-md-8">
+                                                    <label for="notes_{{ checkpoint.id }}" class="form-label small">Add notes (optional):</label>
+                                                    <input type="text" class="form-control form-control-sm" 
+                                                           id="notes_{{ checkpoint.id }}" name="notes" 
+                                                           placeholder="How was your experience?">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                                        <i class="fas fa-check me-1"></i>Mark Complete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                                <p>No activities planned for this day</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Travel Tips -->
+        {% if itinerary.get_itinerary_data().get('travel_tips') %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="fas fa-lightbulb me-2"></i>Travel Tips
+                        </h4>
+                        <ul class="list-unstyled">
+                            {% for tip in itinerary.get_itinerary_data().get('travel_tips', []) %}
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>{{ tip }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Budget Breakdown -->
+        {% if itinerary.get_itinerary_data().get('budget_breakdown') %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary mb-3">
+                            <i class="fas fa-chart-pie me-2"></i>Budget Breakdown
+                        </h4>
+                        <div class="row g-3">
+                            {% for category, amount in itinerary.get_itinerary_data().get('budget_breakdown', {}).items() %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="budget-item">
+                                    <div class="budget-category">{{ category.title() }}</div>
+                                    <div class="budget-amount">₹{{ "{:,.0f}".format(amount) }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

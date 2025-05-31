@@ -1,0 +1,641 @@
+/* Custom CSS Variables for Indian Travel Theme */
+:root {
+    --primary: 255 107 53; /* #FF6B35 - vibrant orange */
+    --secondary: 0 78 137; /* #004E89 - deep blue */
+    --accent: 255 210 63; /* #FFD23F - golden yellow */
+    --background: 248 249 250; /* #F8F9FA - light grey */
+    --text: 44 62 80; /* #2C3E50 - dark blue-grey */
+    --success: 39 174 96; /* #27AE60 - green */
+    --spacing: 16px;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--text));
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+/* Custom Bootstrap Color Classes */
+.bg-primary {
+    background-color: hsl(var(--primary)) !important;
+}
+
+.text-primary {
+    color: hsl(var(--primary)) !important;
+}
+
+.btn-primary {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+    border-color: hsl(var(--primary) / 0.9);
+}
+
+.text-accent {
+    color: hsl(var(--accent)) !important;
+}
+
+.bg-accent {
+    background-color: hsl(var(--accent)) !important;
+}
+
+.btn-accent {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--accent));
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.btn-accent:hover {
+    background-color: hsl(var(--accent) / 0.9);
+    border-color: hsl(var(--accent) / 0.9);
+    color: hsl(var(--text));
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1));
+    padding: 60px 0;
+}
+
+.hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing);
+}
+
+.feature-item {
+    background: white;
+    padding: 8px var(--spacing);
+    border-radius: 25px;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.hero-image img {
+    border-radius: var(--spacing);
+}
+
+/* Form Styles */
+.form-check-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-check-card:hover {
+    border-color: hsl(var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.form-check-card .form-check-input:checked ~ .form-check-label {
+    color: hsl(var(--primary));
+    font-weight: 600;
+}
+
+.form-check-card .form-check-input:checked {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+}
+
+/* Feature Cards */
+.feature-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: var(--spacing);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+/* Progress Styles */
+.progress-lg {
+    height: 12px;
+    border-radius: 6px;
+}
+
+.progress-card {
+    background: white;
+    border-radius: var(--spacing);
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.stats-grid {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Itinerary Styles */
+.day-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+}
+
+.day-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.day-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-number {
+    background: hsl(var(--secondary));
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.day-progress {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.day-content {
+    padding: 1.5rem;
+}
+
+.checkpoint-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.checkpoint-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.checkpoint-card.completed {
+    border-color: hsl(var(--success));
+    background: hsl(var(--success) / 0.05);
+}
+
+.checkpoint-time {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-location {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.checkpoint-cost {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.checkpoint-description {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.checkpoint-completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.checkpoint-form {
+    margin-top: 1rem;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: hsl(var(--success));
+    color: white;
+}
+
+.timeline-item.pending .timeline-marker {
+    background: hsl(var(--primary));
+    color: white;
+}
+
+.timeline-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.timeline-time {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.timeline-description {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-cost {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.timeline-status.completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    color: hsl(var(--success));
+}
+
+/* Tracking Styles */
+.current-status-card {
+    background: white;
+    border-radius: var(--spacing);
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.current-location {
+    margin-top: 0.5rem;
+}
+
+.location-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--text));
+}
+
+.location-time {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.map-container {
+    height: 400px;
+    background: #f8f9fa;
+    border-radius: 0 0 var(--spacing) var(--spacing);
+    position: relative;
+}
+
+.map-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--primary) / 0.05));
+}
+
+.map-content {
+    text-align: center;
+}
+
+.map-legend {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.completed {
+    background: hsl(var(--success));
+}
+
+.legend-dot.current {
+    background: hsl(var(--primary));
+}
+
+.legend-dot.pending {
+    background: #e9ecef;
+}
+
+.live-updates {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.update-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.update-item:last-child {
+    border-bottom: none;
+}
+
+.update-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.update-message {
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+/* My Itineraries */
+.itinerary-summary-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.itinerary-summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.15);
+}
+
+.itinerary-summary-card .card-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+}
+
+.itinerary-summary-card .card-body {
+    padding: 1.5rem;
+}
+
+.interests-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.interest-tag {
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Budget Breakdown */
+.budget-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.budget-item:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    transform: translateY(-2px);
+}
+
+.budget-category {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.budget-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: hsl(var(--primary));
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-features {
+        flex-direction: column;
+    }
+    
+    .stats-grid {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .checkpoint-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .map-legend {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+}
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.7;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Scrollbar */
+.live-updates::-webkit-scrollbar {
+    width: 6px;
+}
+
+.live-updates::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.live-updates::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
+}
+
+.live-updates::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+}
