@@ -87,6 +87,13 @@ function enhanceForms() {
         budgetInput.addEventListener('input', function() {
             formatBudgetInput(this);
         });
+        
+        // Convert formatted value back to raw number before form submission
+        budgetInput.form.addEventListener('submit', function() {
+            if (budgetInput.dataset.rawValue) {
+                budgetInput.value = budgetInput.dataset.rawValue;
+            }
+        });
     }
 }
 
@@ -271,9 +278,11 @@ function showDestinationSuggestions(suggestions) {
 function formatBudgetInput(input) {
     let value = input.value.replace(/[^\d]/g, '');
     if (value) {
-        // Add comma formatting for large numbers
-        value = parseInt(value).toLocaleString('en-IN');
-        input.value = value;
+        // Store the raw numeric value
+        input.dataset.rawValue = value;
+        // Display formatted value with commas
+        const formattedValue = parseInt(value).toLocaleString('en-IN');
+        input.value = formattedValue;
     }
 }
 
