@@ -7,7 +7,10 @@ dependencies = [
     "email-validator>=2.2.0",
     "flask>=3.1.1",
     "flask-sqlalchemy>=3.1.1",
+    "groq>=0.26.0",
     "gunicorn>=23.0.0",
     "openai>=1.82.1",
     "psycopg2-binary>=2.9.10",
+    "sqlalchemy>=2.0.41",
+    "werkzeug>=3.1.3",
 ]
