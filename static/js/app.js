@@ -81,18 +81,13 @@ function enhanceForms() {
         });
     }
     
-    // Budget input formatting
+    // Budget input - removed formatting to allow large numbers
     const budgetInput = document.getElementById('budget');
     if (budgetInput) {
+        // Remove any formatting restrictions
         budgetInput.addEventListener('input', function() {
-            formatBudgetInput(this);
-        });
-        
-        // Convert formatted value back to raw number before form submission
-        budgetInput.form.addEventListener('submit', function() {
-            if (budgetInput.dataset.rawValue) {
-                budgetInput.value = budgetInput.dataset.rawValue;
-            }
+            // Only allow numbers
+            this.value = this.value.replace(/[^\d]/g, '');
         });
     }
 }
@@ -276,14 +271,7 @@ function showDestinationSuggestions(suggestions) {
 }
 
 function formatBudgetInput(input) {
-    let value = input.value.replace(/[^\d]/g, '');
-    if (value) {
-        // Store the raw numeric value
-        input.dataset.rawValue = value;
-        // Display formatted value with commas
-        const formattedValue = parseInt(value).toLocaleString('en-IN');
-        input.value = formattedValue;
-    }
+    // Function removed - budget input now accepts raw numbers without formatting
 }
 
 function animateProgress() {
