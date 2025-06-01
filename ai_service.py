@@ -70,7 +70,7 @@ You must respond with valid JSON in this exact structure:
 Ensure all costs are realistic and within the specified budget. Include specific landmark names and practical advice for Indian travelers."""
 
         response = groq_client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "system",
@@ -127,7 +127,7 @@ Respond with valid JSON in this exact format:
 }}"""
         
         response = groq_client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "system",
