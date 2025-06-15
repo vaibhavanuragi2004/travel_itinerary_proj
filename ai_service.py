@@ -7,7 +7,12 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 groq_client = None
 
 if GROQ_API_KEY:
-    groq_client = Groq(api_key=GROQ_API_KEY)
+    try:
+        groq_client = Groq(api_key=GROQ_API_KEY)
+        print(f"GROQ client initialized successfully with key length: {len(GROQ_API_KEY)}")
+    except Exception as e:
+        print(f"Failed to initialize GROQ client: {e}")
+        groq_client = None
 else:
     print("Warning: GROQ_API_KEY not found. AI features will be disabled.")
 
@@ -102,6 +107,7 @@ Required JSON structure:
 
 Ensure all costs are realistic and within the specified budget. Include specific landmark names and practical advice for Indian travelers."""
 
+        print(f"Making GROQ API call for {destination}, {duration} days, budget ₹{budget}")
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[
