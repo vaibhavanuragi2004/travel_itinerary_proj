@@ -134,163 +134,155 @@ h1, h2, h3, h4, h5, h6 {
 /* Timeline Styles */
 .timeline-container {
     position: relative;
-    max-width: 1000px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px 0;
+    padding: 40px 0;
 }
 
 .timeline-day {
-    margin-bottom: 60px;
+    margin-bottom: 80px;
     position: relative;
 }
 
 .day-header-timeline {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
-    border-radius: 15px;
-    color: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.day-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.day-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: hsl(var(--primary));
-}
-
-.day-info {
-    flex: 1;
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .day-title {
-    margin: 0;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 10px;
 }
 
 .day-progress-info {
-    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: hsl(var(--background));
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid hsl(var(--primary));
 }
 
 .progress-text {
     font-size: 0.9rem;
-    opacity: 0.9;
+    color: hsl(var(--text));
+    font-weight: 500;
 }
 
 .progress-bar-custom {
-    width: 200px;
-    height: 6px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 3px;
-    margin-top: 5px;
+    width: 100px;
+    height: 4px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 2px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background: hsl(var(--accent));
-    border-radius: 3px;
+    background: hsl(var(--primary));
+    border-radius: 2px;
     transition: width 0.3s ease;
 }
 
 .timeline-activities {
     position: relative;
-    padding-left: 50px;
+    padding-left: 60px;
 }
 
 .timeline-activities::before {
     content: '';
     position: absolute;
-    left: 25px;
+    left: 20px;
     top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, hsl(var(--primary)), hsl(var(--accent)));
-    border-radius: 2px;
+    bottom: -40px;
+    width: 2px;
+    background: #ddd;
+    border-radius: 1px;
 }
 
 .timeline-item {
     position: relative;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
     display: flex;
     align-items: flex-start;
+    transition: all 0.3s ease;
 }
 
 .timeline-marker {
-    position: relative;
-    margin-right: 25px;
+    position: absolute;
+    left: -48px;
+    top: 0;
     display: flex;
     align-items: center;
+    flex-direction: column;
 }
 
 .marker-dot {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: white;
-    border: 4px solid hsl(var(--primary));
+    background: hsl(var(--primary));
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 2;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .marker-dot.completed {
     background: hsl(var(--success));
-    border-color: hsl(var(--success));
     color: white;
 }
 
+.marker-dot:not(.completed) {
+    background: white;
+    border: 3px solid hsl(var(--primary));
+}
+
 .marker-time {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: bold;
     color: hsl(var(--primary));
 }
 
+.marker-dot.completed .marker-time {
+    color: white;
+}
+
 .drag-handle {
-    position: absolute;
-    left: -15px;
-    top: 50%;
-    transform: translateY(-50%);
+    margin-top: 8px;
     cursor: grab;
     opacity: 0;
     transition: opacity 0.2s ease;
     background: hsl(var(--primary));
     color: white;
-    width: 20px;
-    height: 30px;
-    border-radius: 4px;
+    width: 16px;
+    height: 20px;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
 }
 
 .timeline-item:hover .drag-handle {
     opacity: 1;
 }
 
+.drag-handle:active {
+    cursor: grabbing;
+}
+
 .timeline-content {
     flex: 1;
     min-width: 0;
+    margin-left: 20px;
 }
 
 .activity-card {
@@ -457,45 +449,84 @@ h1, h2, h3, h4, h5, h6 {
     color: #ccc;
 }
 
+/* Global timeline connection */
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ddd;
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+/* Sortable effects */
+.sortable-ghost {
+    opacity: 0.4;
+}
+
+.sortable-chosen {
+    transform: scale(1.02);
+}
+
+.sortable-drag {
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .timeline-container {
-        padding: 10px;
-    }
-    
-    .day-header-timeline {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .day-circle {
-        margin-right: 0;
-        margin-bottom: 15px;
+        padding: 20px 10px;
+        max-width: 100%;
     }
     
     .timeline-activities {
-        padding-left: 30px;
+        padding-left: 40px;
     }
     
     .timeline-activities::before {
         left: 15px;
     }
     
+    .timeline-marker {
+        left: -33px;
+    }
+    
     .marker-dot {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
+    }
+    
+    .marker-time {
+        font-size: 0.6rem;
     }
     
     .activity-card {
-        padding: 20px;
+        padding: 15px;
+    }
+    
+    .activity-location {
+        font-size: 1.1rem;
     }
     
     .completion-form .form-group {
         flex-direction: column;
+        gap: 8px;
     }
     
-    .completion-form .form-control {
-        margin-bottom: 10px;
+    .timeline-content {
+        margin-left: 15px;
+    }
+    
+    .day-title {
+        font-size: 1.5rem;
+    }
+    
+    .progress-bar-custom {
+        width: 80px;
     }
 }
 

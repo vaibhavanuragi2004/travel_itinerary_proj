@@ -102,22 +102,17 @@
                     
                     <div class="timeline-day" data-day="{{ day_num }}">
                         <div class="day-header-timeline">
-                            <div class="day-circle">
-                                <span class="day-number">{{ day_num }}</span>
-                            </div>
-                            <div class="day-info">
-                                <h4 class="day-title">Day {{ day_num }}</h4>
-                                {% if day_data %}
-                                    {% set day_completed = day_data|selectattr('is_completed')|list|length %}
-                                    {% set day_total = day_data|length %}
-                                    <div class="day-progress-info">
-                                        <span class="progress-text">{{ day_completed }}/{{ day_total }} completed</span>
-                                        <div class="progress-bar-custom">
-                                            <div class="progress-fill" style="width: {{ (day_completed / day_total * 100) if day_total > 0 else 0 }}%"></div>
-                                        </div>
+                            <h4 class="day-title">Day {{ day_num }}</h4>
+                            {% if day_data %}
+                                {% set day_completed = day_data|selectattr('is_completed')|list|length %}
+                                {% set day_total = day_data|length %}
+                                <div class="day-progress-info">
+                                    <span class="progress-text">{{ day_completed }}/{{ day_total }} completed</span>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill" style="width: {{ (day_completed / day_total * 100) if day_total > 0 else 0 }}%"></div>
                                     </div>
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% endif %}
                         </div>
                         
                         {% if day_data %}
