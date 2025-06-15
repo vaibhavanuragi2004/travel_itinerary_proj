@@ -124,6 +124,12 @@
                                     <div class="checkpoint-header">
                                         <h6 class="checkpoint-location">
                                             <i class="fas fa-map-marker-alt me-2"></i>{{ checkpoint.location }}
+                                            <button type="button" class="btn btn-outline-primary btn-sm ms-2 map-btn" 
+                                                    data-location="{{ checkpoint.location }}"
+                                                    data-activity="{{ checkpoint.activity }}"
+                                                    title="Show on map">
+                                                <i class="fas fa-map"></i>
+                                            </button>
                                         </h6>
                                         {% if checkpoint.estimated_cost > 0 %}
                                         <span class="checkpoint-cost">
@@ -225,4 +231,129 @@
         {% endif %}
     </div>
 </section>
+
+<!-- Map Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">
+                    <i class="fas fa-map-marker-alt me-2"></i>Location Map
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="locationMap" style="height: 400px; width: 100%;"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-start flex-grow-1">
+                    <strong id="mapLocationName"></strong>
+                    <p class="mb-0 text-muted" id="mapLocationActivity"></p>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let map = null;
+let currentMarker = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to all map buttons
+    document.querySelectorAll('.map-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const locationName = this.getAttribute('data-location');
+            const activity = this.getAttribute('data-activity');
+            showLocationMap(locationName, activity);
+        });
+    });
+    
+    // Clean up map when modal is hidden
+    document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
+        if (map) {
+            map.remove();
+            map = null;
+        }
+        if (currentMarker) {
+            currentMarker = null;
+        }
+    });
+});
+
+function showLocationMap(locationName, activity) {
+    // Update modal content
+    document.getElementById('mapLocationName').textContent = locationName;
+    document.getElementById('mapLocationActivity').textContent = activity;
+    
+    // Show the modal
+    const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+    mapModal.show();
+    
+    // Wait for modal to be fully shown before initializing map
+    document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
+        initializeMap(locationName);
+    }, { once: true });
+}
+
+function initializeMap(locationName) {
+    // Destroy existing map if it exists
+    if (map) {
+        map.remove();
+        map = null;
+    }
+    
+    // Initialize the map
+    map = L.map('locationMap').setView([20.5937, 78.9629], 5);
+    
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(map);
+    
+    // Search for the location
+    searchLocation(locationName);
+}
+
+function searchLocation(locationName) {
+    // Use Nominatim API to geocode the location
+    const searchQuery = encodeURIComponent(locationName + ', India');
+    const nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + searchQuery + '&limit=1';
+    
+    fetch(nominatimUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+                
+                // Set map view to the found location
+                map.setView([lat, lon], 14);
+                
+                // Remove existing marker
+                if (currentMarker) {
+                    map.removeLayer(currentMarker);
+                }
+                
+                // Add marker for the location
+                currentMarker = L.marker([lat, lon])
+                    .addTo(map)
+                    .bindPopup('<strong>' + locationName + '</strong><br>' + result.display_name)
+                    .openPopup();
+            } else {
+                // If location not found, show a message
+                alert('Location not found on map. Showing general area.');
+            }
+        })
+        .catch(error => {
+            console.error('Error searching for location:', error);
+            alert('Error loading map. Please check your internet connection.');
+        });
+}
+</script>
 {% endblock %}

@@ -42,6 +42,17 @@ h1, h2, h3, h4, h5, h6 {
     border-color: hsl(var(--primary) / 0.9);
 }
 
+.btn-outline-primary {
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+}
+
+.btn-outline-primary:hover {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: white;
+}
+
 .text-accent {
     color: hsl(var(--accent)) !important;
 }
