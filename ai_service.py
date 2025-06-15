@@ -11,13 +11,53 @@ if GROQ_API_KEY:
 else:
     print("Warning: GROQ_API_KEY not found. AI features will be disabled.")
 
+def generate_basic_itinerary(destination, duration, budget, interests):
+    """
+    Generate a basic itinerary template when AI is not available
+    """
+    interests_str = ", ".join(interests) if interests else "sightseeing"
+    daily_budget = budget / duration if duration > 0 else 0
+    
+    activities_template = [
+        {"time": "09:00", "location": f"{destination} - Morning Attraction", "description": f"Visit popular morning attractions in {destination}", "cost": daily_budget * 0.3},
+        {"time": "12:00", "location": f"{destination} - Local Restaurant", "description": "Lunch at local restaurant", "cost": daily_budget * 0.2},
+        {"time": "14:00", "location": f"{destination} - Main Attraction", "description": f"Explore main attractions related to {interests_str}", "cost": daily_budget * 0.3},
+        {"time": "17:00", "location": f"{destination} - Evening Spot", "description": "Evening leisure activities", "cost": daily_budget * 0.2}
+    ]
+    
+    days = []
+    for day in range(1, duration + 1):
+        day_activities = [
+            {
+                "time": activity["time"],
+                "location": activity["location"].replace("Morning", f"Day {day} Morning").replace("Main", f"Day {day} Main"),
+                "description": activity["description"],
+                "cost": activity["cost"]
+            }
+            for activity in activities_template
+        ]
+        
+        days.append({
+            "day": day,
+            "theme": f"Day {day} - Exploring {destination}",
+            "activities": day_activities
+        })
+    
+    return {
+        "destination": destination,
+        "duration": duration,
+        "total_estimated_cost": budget,
+        "overview": f"A {duration}-day basic itinerary for {destination} focusing on {interests_str}. Add your API key for personalized AI-generated itineraries.",
+        "days": days
+    }
+
 def generate_travel_itinerary(destination, duration, budget, interests):
     """
     Generate a detailed travel itinerary using AI for Indian tourists
     """
     if not groq_client:
-        print("Groq API key not configured. Cannot generate AI itinerary.")
-        return None
+        print("Groq API key not configured. Using basic itinerary template.")
+        return generate_basic_itinerary(destination, duration, budget, interests)
         
     try:
         interests_str = ", ".join(interests) if interests else "general sightseeing"
@@ -97,7 +137,6 @@ Ensure all costs are realistic and within the specified budget. Include specific
         
     except json.JSONDecodeError as e:
         print(f"JSON decode error: {e}")
-        print(f"Response content: {content if 'content' in locals() else 'No content'}")
         return None
     except Exception as e:
         print(f"Error generating itinerary: {e}")
