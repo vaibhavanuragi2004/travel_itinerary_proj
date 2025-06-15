@@ -100,6 +100,37 @@ h1, h2, h3, h4, h5, h6 {
     border-left: 3px solid hsl(var(--accent));
 }
 
+.travel-info {
+    padding: 4px 8px;
+    background-color: rgba(13, 110, 253, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #0d6efd;
+}
+
+.travel-tips {
+    padding: 4px 8px;
+    background-color: rgba(25, 135, 84, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #198754;
+}
+
+.checkpoint-card {
+    margin-left: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+}
+
+.checkpoint-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sortable-checkpoints {
+    min-height: 50px;
+}
+
 .text-accent {
     color: hsl(var(--accent)) !important;
 }

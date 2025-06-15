@@ -143,12 +143,39 @@
                                     </div>
                                     <p class="checkpoint-description">{{ checkpoint.activity }}</p>
                                     
-                                    {% if checkpoint.notes and 'opening_hours' in checkpoint.notes %}
-                                    <div class="opening-hours">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>Open: {{ checkpoint.notes.split('opening_hours:')[1].split(',')[0] if 'opening_hours:' in checkpoint.notes else 'Hours not available' }}
-                                        </small>
-                                    </div>
+                                    {% if checkpoint.notes %}
+                                        {% set notes_dict = {} %}
+                                        {% for note_part in checkpoint.notes.split(', ') %}
+                                            {% if ':' in note_part %}
+                                                {% set key, value = note_part.split(':', 1) %}
+                                                {% set _ = notes_dict.update({key: value}) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if notes_dict.get('opening_hours') %}
+                                        <div class="opening-hours">
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>Open: {{ notes_dict.get('opening_hours') }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if notes_dict.get('travel_time') %}
+                                        <div class="travel-info mt-1">
+                                            <small class="text-info">
+                                                <i class="fas fa-route me-1"></i>{{ notes_dict.get('travel_time') }} 
+                                                {% if notes_dict.get('transport') %}by {{ notes_dict.get('transport') }}{% endif %} to next location
+                                            </small>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if notes_dict.get('tips') %}
+                                        <div class="travel-tips mt-1">
+                                            <small class="text-success">
+                                                <i class="fas fa-lightbulb me-1"></i>{{ notes_dict.get('tips') }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
                                     {% endif %}
                                     
                                     {% if checkpoint.is_completed %}

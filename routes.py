@@ -47,13 +47,25 @@ def generate_itinerary():
         for day_data in itinerary_data.get('days', []):
             day_num = day_data.get('day', 1)
             for activity in day_data.get('activities', []):
+                # Prepare notes with opening hours and tips
+                notes_parts = []
+                if activity.get('opening_hours'):
+                    notes_parts.append(f"opening_hours:{activity.get('opening_hours')}")
+                if activity.get('tips'):
+                    notes_parts.append(f"tips:{activity.get('tips')}")
+                if activity.get('travel_time_to_next'):
+                    notes_parts.append(f"travel_time:{activity.get('travel_time_to_next')}")
+                if activity.get('transportation_mode'):
+                    notes_parts.append(f"transport:{activity.get('transportation_mode')}")
+                
                 checkpoint = Checkpoint(
                     itinerary_id=itinerary.id,
                     day=day_num,
                     time=activity.get('time', '09:00'),
                     location=activity.get('location', ''),
                     activity=activity.get('description', ''),
-                    estimated_cost=activity.get('cost', 0.0)
+                    estimated_cost=activity.get('cost', 0.0),
+                    notes=', '.join(notes_parts) if notes_parts else None
                 )
                 db.session.add(checkpoint)
         
@@ -117,6 +129,32 @@ def complete_checkpoint(checkpoint_id):
 def my_itineraries():
     itineraries = TravelItinerary.query.order_by(TravelItinerary.created_at.desc()).all()
     return render_template('my_itineraries.html', itineraries=itineraries)
+
+@app.route('/reorder_checkpoints', methods=['POST'])
+def reorder_checkpoints():
+    try:
+        data = request.get_json()
+        checkpoint_ids = data.get('checkpoint_ids', [])
+        
+        if not checkpoint_ids:
+            return jsonify({'success': False, 'error': 'No checkpoint IDs provided'})
+        
+        # Update the order of checkpoints based on their new positions
+        for index, checkpoint_id in enumerate(checkpoint_ids):
+            checkpoint = Checkpoint.query.get(checkpoint_id)
+            if checkpoint:
+                # Update the time based on position (assuming 2-hour intervals starting from 9 AM)
+                start_hour = 9 + (index * 2)
+                new_time = f"{start_hour:02d}:00"
+                checkpoint.time = new_time
+        
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Checkpoints reordered successfully'})
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error reordering checkpoints: {e}")
+        return jsonify({'success': False, 'error': 'Failed to reorder checkpoints'})
 
 @app.errorhandler(404)
 def not_found(error):
