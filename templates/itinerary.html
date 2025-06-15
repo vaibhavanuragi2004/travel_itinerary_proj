@@ -89,137 +89,151 @@
         </div>
         {% endif %}
 
-        <!-- Daily Itinerary -->
+        <!-- Daily Itinerary Timeline -->
         <div class="row">
             <div class="col-12">
-                <h3 class="text-primary mb-4">
-                    <i class="fas fa-calendar-week me-2"></i>Daily Itinerary
+                <h3 class="text-primary mb-5 text-center">
+                    <i class="fas fa-route me-2"></i>Your Journey Timeline
                 </h3>
                 
-                {% for day_num in range(1, itinerary.duration + 1) %}
-                <div class="day-card mb-4">
-                    <div class="day-header">
-                        <h4 class="day-title">
-                            <span class="day-number">{{ day_num }}</span>
-                            Day {{ day_num }}
-                            {% set day_data = days_data.get(day_num, []) %}
-                            {% if day_data %}
-                                {% set day_completed = day_data|selectattr('is_completed')|list|length %}
-                                {% set day_total = day_data|length %}
-                                <span class="day-progress">
-                                    {{ day_completed }}/{{ day_total }} completed
-                                </span>
-                            {% endif %}
-                        </h4>
-                    </div>
+                <div class="timeline-container">
+                    {% for day_num in range(1, itinerary.duration + 1) %}
+                    {% set day_data = days_data.get(day_num, []) %}
                     
-                    <div class="day-content">
+                    <div class="timeline-day" data-day="{{ day_num }}">
+                        <div class="day-header-timeline">
+                            <div class="day-circle">
+                                <span class="day-number">{{ day_num }}</span>
+                            </div>
+                            <div class="day-info">
+                                <h4 class="day-title">Day {{ day_num }}</h4>
+                                {% if day_data %}
+                                    {% set day_completed = day_data|selectattr('is_completed')|list|length %}
+                                    {% set day_total = day_data|length %}
+                                    <div class="day-progress-info">
+                                        <span class="progress-text">{{ day_completed }}/{{ day_total }} completed</span>
+                                        <div class="progress-bar-custom">
+                                            <div class="progress-fill" style="width: {{ (day_completed / day_total * 100) if day_total > 0 else 0 }}%"></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
                         {% if day_data %}
-                            <div class="sortable-checkpoints" data-day="{{ day_num }}">
+                        <div class="timeline-activities sortable-checkpoints" data-day="{{ day_num }}">
                             {% for checkpoint in day_data %}
-                            <div class="checkpoint-card {{ 'completed' if checkpoint.is_completed else '' }}" data-checkpoint-id="{{ checkpoint.id }}">
-                                <div class="checkpoint-drag-handle">
-                                    <i class="fas fa-grip-vertical text-muted"></i>
-                                </div>
-                                <div class="checkpoint-time">
-                                    <i class="fas fa-clock me-2"></i>{{ checkpoint.time }}
-                                </div>
-                                <div class="checkpoint-content">
-                                    <div class="checkpoint-header">
-                                        <h6 class="checkpoint-location">
-                                            <i class="fas fa-map-marker-alt me-2"></i>{{ checkpoint.location }}
-                                            <button type="button" class="btn btn-outline-primary btn-sm ms-2 map-btn" 
-                                                    data-location="{{ checkpoint.location }}"
-                                                    data-activity="{{ checkpoint.activity }}"
-                                                    title="Show on map">
-                                                <i class="fas fa-map"></i>
-                                            </button>
-                                        </h6>
-                                        {% if checkpoint.estimated_cost > 0 %}
-                                        <span class="checkpoint-cost">
-                                            <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(checkpoint.estimated_cost) }}
-                                        </span>
+                            <div class="timeline-item {{ 'completed' if checkpoint.is_completed else '' }}" data-checkpoint-id="{{ checkpoint.id }}">
+                                <div class="timeline-marker">
+                                    <div class="marker-dot {{ 'completed' if checkpoint.is_completed else '' }}">
+                                        {% if checkpoint.is_completed %}
+                                            <i class="fas fa-check"></i>
+                                        {% else %}
+                                            <span class="marker-time">{{ checkpoint.time.split(':')[0] }}</span>
                                         {% endif %}
                                     </div>
-                                    <p class="checkpoint-description">{{ checkpoint.activity }}</p>
-                                    
-                                    {% if checkpoint.notes %}
-                                        {% set notes_dict = {} %}
-                                        {% for note_part in checkpoint.notes.split(', ') %}
-                                            {% if ':' in note_part %}
-                                                {% set key, value = note_part.split(':', 1) %}
-                                                {% set _ = notes_dict.update({key: value}) %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if notes_dict.get('opening_hours') %}
-                                        <div class="opening-hours">
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock me-1"></i>Open: {{ notes_dict.get('opening_hours') }}
-                                            </small>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        {% if notes_dict.get('travel_time') %}
-                                        <div class="travel-info mt-1">
-                                            <small class="text-info">
-                                                <i class="fas fa-route me-1"></i>{{ notes_dict.get('travel_time') }} 
-                                                {% if notes_dict.get('transport') %}by {{ notes_dict.get('transport') }}{% endif %} to next location
-                                            </small>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        {% if notes_dict.get('tips') %}
-                                        <div class="travel-tips mt-1">
-                                            <small class="text-success">
-                                                <i class="fas fa-lightbulb me-1"></i>{{ notes_dict.get('tips') }}
-                                            </small>
-                                        </div>
-                                        {% endif %}
-                                    {% endif %}
-                                    
-                                    {% if checkpoint.is_completed %}
-                                        <div class="checkpoint-completed">
-                                            <i class="fas fa-check-circle text-success me-2"></i>
-                                            <span class="text-success">Completed on {{ checkpoint.completed_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
-                                            {% if checkpoint.notes %}
-                                                <div class="mt-2">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-sticky-note me-1"></i>{{ checkpoint.notes }}
-                                                    </small>
-                                                </div>
+                                    <div class="drag-handle">
+                                        <i class="fas fa-grip-vertical"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-content">
+                                    <div class="activity-card">
+                                        <div class="activity-header">
+                                            <div class="activity-time">
+                                                <i class="fas fa-clock me-2"></i>{{ checkpoint.time }}
+                                            </div>
+                                            {% if checkpoint.estimated_cost > 0 %}
+                                            <div class="activity-cost">
+                                                <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(checkpoint.estimated_cost) }}
+                                            </div>
                                             {% endif %}
                                         </div>
-                                    {% else %}
-                                        <form action="{{ url_for('complete_checkpoint', checkpoint_id=checkpoint.id) }}" method="POST" class="checkpoint-form">
-                                            <div class="row align-items-end">
-                                                <div class="col-md-8">
-                                                    <label for="notes_{{ checkpoint.id }}" class="form-label small">Add notes (optional):</label>
-                                                    <input type="text" class="form-control form-control-sm" 
-                                                           id="notes_{{ checkpoint.id }}" name="notes" 
-                                                           placeholder="How was your experience?">
+                                        
+                                        <div class="activity-main">
+                                            <h5 class="activity-location">
+                                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>{{ checkpoint.location }}
+                                                <button type="button" class="btn btn-outline-primary btn-sm ms-2 map-btn pulse-btn" 
+                                                        data-location="{{ checkpoint.location }}"
+                                                        data-activity="{{ checkpoint.activity }}"
+                                                        title="Show on map">
+                                                    <i class="fas fa-map"></i>
+                                                </button>
+                                            </h5>
+                                            <p class="activity-description">{{ checkpoint.activity }}</p>
+                                        </div>
+                                        
+                                        {% if checkpoint.notes %}
+                                            {% set notes_dict = {} %}
+                                            {% for note_part in checkpoint.notes.split(', ') %}
+                                                {% if ':' in note_part %}
+                                                    {% set key, value = note_part.split(':', 1) %}
+                                                    {% set _ = notes_dict.update({key: value}) %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                            <div class="activity-details">
+                                                {% if notes_dict.get('opening_hours') %}
+                                                <div class="detail-item opening-hours">
+                                                    <i class="fas fa-clock me-2"></i>
+                                                    <span>Open: {{ notes_dict.get('opening_hours') }}</span>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <button type="submit" class="btn btn-success btn-sm w-100">
-                                                        <i class="fas fa-check me-1"></i>Mark Complete
-                                                    </button>
+                                                {% endif %}
+                                                
+                                                {% if notes_dict.get('travel_time') %}
+                                                <div class="detail-item travel-info">
+                                                    <i class="fas fa-route me-2"></i>
+                                                    <span>{{ notes_dict.get('travel_time') }} 
+                                                    {% if notes_dict.get('transport') %}via {{ notes_dict.get('transport') }}{% endif %} to next</span>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if notes_dict.get('tips') %}
+                                                <div class="detail-item travel-tips">
+                                                    <i class="fas fa-lightbulb me-2"></i>
+                                                    <span>{{ notes_dict.get('tips') }}</span>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if checkpoint.is_completed %}
+                                            <div class="completion-status">
+                                                <div class="completed-badge">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    Completed on {{ checkpoint.completed_at.strftime('%b %d at %I:%M %p') }}
                                                 </div>
                                             </div>
-                                        </form>
-                                    {% endif %}
+                                        {% else %}
+                                            <div class="completion-form">
+                                                <form action="{{ url_for('complete_checkpoint', checkpoint_id=checkpoint.id) }}" method="POST" class="checkpoint-form">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" 
+                                                               name="notes" 
+                                                               placeholder="Add your experience notes...">
+                                                        <button type="submit" class="btn btn-success btn-complete">
+                                                            <i class="fas fa-check me-1"></i>Complete
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
-                            </div>
+                        </div>
                         {% else %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                        <div class="timeline-empty">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times mb-3"></i>
                                 <p>No activities planned for this day</p>
                             </div>
+                        </div>
                         {% endif %}
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
 
@@ -315,8 +329,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize drag and drop for each day
     document.querySelectorAll('.sortable-checkpoints').forEach(container => {
         new Sortable(container, {
-            handle: '.checkpoint-drag-handle',
-            animation: 200,
+            handle: '.drag-handle',
+            animation: 300,
             ghostClass: 'sortable-ghost',
             chosenClass: 'sortable-chosen',
             dragClass: 'sortable-drag',
@@ -343,8 +357,8 @@ function handleCheckpointReorder(evt) {
     const container = evt.to;
     
     // Get all checkpoint IDs in new order
-    container.querySelectorAll('.checkpoint-card').forEach(card => {
-        const checkpointId = card.getAttribute('data-checkpoint-id');
+    container.querySelectorAll('.timeline-item').forEach(item => {
+        const checkpointId = item.getAttribute('data-checkpoint-id');
         if (checkpointId) {
             checkpointIds.push(checkpointId);
         }
