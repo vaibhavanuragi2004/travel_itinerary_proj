@@ -74,7 +74,7 @@ CRITICAL PLANNING RULES:
 2. Minimize travel time between locations - visit places in logical proximity order
 3. Consider traffic patterns and peak hours for major cities
 4. Start each day from accommodation and plan a circular/efficient route
-5. Include specific landmark names, addresses, and realistic travel times between locations
+5. Include specific landmark names, addresses, opening/closing hours, and realistic travel times between locations
 6. Factor in meal breaks at restaurants near the current location cluster
 7. End each day at a location convenient for returning to accommodation
 
@@ -97,6 +97,7 @@ Required JSON structure:
           "location": "Specific landmark/attraction name with area",
           "description": "Detailed activity description with duration",
           "cost": 500,
+          "opening_hours": "9:00 AM - 6:00 PM",
           "travel_time_to_next": "15 minutes",
           "transportation_mode": "walking/taxi/metro",
           "tips": "Practical tips for Indian tourists"

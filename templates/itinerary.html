@@ -115,8 +115,12 @@
                     
                     <div class="day-content">
                         {% if day_data %}
+                            <div class="sortable-checkpoints" data-day="{{ day_num }}">
                             {% for checkpoint in day_data %}
-                            <div class="checkpoint-card {{ 'completed' if checkpoint.is_completed else '' }}">
+                            <div class="checkpoint-card {{ 'completed' if checkpoint.is_completed else '' }}" data-checkpoint-id="{{ checkpoint.id }}">
+                                <div class="checkpoint-drag-handle">
+                                    <i class="fas fa-grip-vertical text-muted"></i>
+                                </div>
                                 <div class="checkpoint-time">
                                     <i class="fas fa-clock me-2"></i>{{ checkpoint.time }}
                                 </div>
@@ -138,6 +142,14 @@
                                         {% endif %}
                                     </div>
                                     <p class="checkpoint-description">{{ checkpoint.activity }}</p>
+                                    
+                                    {% if checkpoint.notes and 'opening_hours' in checkpoint.notes %}
+                                    <div class="opening-hours">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>Open: {{ checkpoint.notes.split('opening_hours:')[1].split(',')[0] if 'opening_hours:' in checkpoint.notes else 'Hours not available' }}
+                                        </small>
+                                    </div>
+                                    {% endif %}
                                     
                                     {% if checkpoint.is_completed %}
                                         <div class="checkpoint-completed">
@@ -171,6 +183,7 @@
                                 </div>
                             </div>
                             {% endfor %}
+                            </div>
                         {% else %}
                             <div class="text-center py-4 text-muted">
                                 <i class="fas fa-calendar-times fa-2x mb-2"></i>
@@ -272,6 +285,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Initialize drag and drop for each day
+    document.querySelectorAll('.sortable-checkpoints').forEach(container => {
+        new Sortable(container, {
+            handle: '.checkpoint-drag-handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            onEnd: function(evt) {
+                handleCheckpointReorder(evt);
+            }
+        });
+    });
+    
     // Clean up map when modal is hidden
     document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
         if (map) {
@@ -283,6 +310,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function handleCheckpointReorder(evt) {
+    const checkpointIds = [];
+    const container = evt.to;
+    
+    // Get all checkpoint IDs in new order
+    container.querySelectorAll('.checkpoint-card').forEach(card => {
+        const checkpointId = card.getAttribute('data-checkpoint-id');
+        if (checkpointId) {
+            checkpointIds.push(checkpointId);
+        }
+    });
+    
+    // Send reorder request to server
+    fetch('/reorder_checkpoints', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            checkpoint_ids: checkpointIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Checkpoints reordered successfully');
+            // Optionally show a success message
+        } else {
+            console.error('Failed to reorder checkpoints:', data.error);
+            // Revert the UI change if needed
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error reordering checkpoints:', error);
+        location.reload();
+    });
+}
 
 function showLocationMap(locationName, activity) {
     // Update modal content
