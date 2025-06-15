@@ -64,16 +64,9 @@ def generate_travel_itinerary(destination, duration, budget, interests):
         
         prompt = f"""Create a detailed {duration}-day travel itinerary for Indian tourists visiting {destination} with a budget of ₹{budget}. The traveler is interested in: {interests_str}.
 
-Please provide a comprehensive itinerary with the following structure:
-- Daily breakdown with specific activities
-- Recommended timings for each activity
-- Estimated costs in Indian Rupees
-- Popular landmarks and attractions suitable for Indian tourists
-- Local transportation suggestions
-- Food recommendations (vegetarian options when possible)
-- Cultural considerations and tips
+IMPORTANT: Respond ONLY with valid JSON. No additional text before or after the JSON.
 
-You must respond with valid JSON in this exact structure:
+Required JSON structure:
 {{
   "destination": "{destination}",
   "duration": {duration},
@@ -125,19 +118,36 @@ Ensure all costs are realistic and within the specified budget. Include specific
         content = response.choices[0].message.content
         if not content:
             print("Empty response from Groq API")
-            return None
+            return generate_basic_itinerary(destination, duration, budget, interests)
+        
+        # Clean the content to extract valid JSON
+        try:
+            # Find JSON block within the response
+            start_idx = content.find('{')
+            end_idx = content.rfind('}') + 1
             
-        result = json.loads(content)
-        
-        # Validate the response structure
-        if not all(key in result for key in ['destination', 'duration', 'days']):
-            raise ValueError("Invalid response structure from AI service")
-        
-        return result
+            if start_idx != -1 and end_idx > start_idx:
+                json_content = content[start_idx:end_idx]
+                result = json.loads(json_content)
+            else:
+                # If no JSON found, parse the entire content
+                result = json.loads(content)
+            
+            # Validate the response structure
+            if not all(key in result for key in ['destination', 'duration', 'days']):
+                print("Invalid response structure, using fallback")
+                return generate_basic_itinerary(destination, duration, budget, interests)
+            
+            return result
+            
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            print(f"Response content preview: {content[:500]}...")
+            return generate_basic_itinerary(destination, duration, budget, interests)
         
     except json.JSONDecodeError as e:
         print(f"JSON decode error: {e}")
-        return None
+        return generate_basic_itinerary(destination, duration, budget, interests)
     except Exception as e:
         print(f"Error generating itinerary: {e}")
         return None
