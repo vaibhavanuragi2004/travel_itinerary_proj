@@ -69,6 +69,15 @@ def generate_travel_itinerary(destination, duration, budget, interests):
         
         prompt = f"""Create a detailed {duration}-day travel itinerary for Indian tourists visiting {destination} with a budget of ₹{budget}. The traveler is interested in: {interests_str}.
 
+CRITICAL PLANNING RULES:
+1. Plan activities in GEOGRAPHICAL SEQUENCE - group nearby attractions together on the same day
+2. Minimize travel time between locations - visit places in logical proximity order
+3. Consider traffic patterns and peak hours for major cities
+4. Start each day from accommodation and plan a circular/efficient route
+5. Include specific landmark names, addresses, and realistic travel times between locations
+6. Factor in meal breaks at restaurants near the current location cluster
+7. End each day at a location convenient for returning to accommodation
+
 IMPORTANT: Respond ONLY with valid JSON. No additional text before or after the JSON.
 
 Required JSON structure:
@@ -76,36 +85,38 @@ Required JSON structure:
   "destination": "{destination}",
   "duration": {duration},
   "total_estimated_cost": 25000,
-  "overview": "Brief description of the trip",
+  "overview": "Brief description of the trip focusing on geographical efficiency",
   "days": [
     {{
       "day": 1,
-      "theme": "Day theme/focus",
+      "theme": "Day theme/focus area",
+      "geographical_zone": "Specific area/district being explored",
       "activities": [
         {{
           "time": "09:00",
-          "location": "Specific location name",
-          "description": "Detailed activity description",
+          "location": "Specific landmark/attraction name with area",
+          "description": "Detailed activity description with duration",
           "cost": 500,
-          "duration": "2 hours",
-          "tips": "Helpful tips for Indian tourists"
+          "travel_time_to_next": "15 minutes",
+          "transportation_mode": "walking/taxi/metro",
+          "tips": "Practical tips for Indian tourists"
         }}
       ]
     }}
   ],
   "travel_tips": [
-    "Important travel tips for Indian tourists"
+    "Location-specific tips including best travel routes and timing advice"
   ],
   "budget_breakdown": {{
     "accommodation": 10000,
     "food": 5000,
-    "transportation": 3000,
+    "local_transportation": 3000,
     "activities": 5000,
     "shopping": 2000
   }}
 }}
 
-Ensure all costs are realistic and within the specified budget. Include specific landmark names and practical advice for Indian travelers."""
+Plan each day to cover one geographical area/zone efficiently. Ensure realistic travel times and costs within the specified budget."""
 
         print(f"Making GROQ API call for {destination}, {duration} days, budget ₹{budget}")
         response = groq_client.chat.completions.create(
@@ -113,7 +124,7 @@ Ensure all costs are realistic and within the specified budget. Include specific
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert travel planner specializing in creating detailed, culturally-aware itineraries for Indian tourists. Provide practical, budget-conscious recommendations with specific details. Always respond with valid JSON only."
+                    "content": "You are an expert travel planner specializing in geographically efficient itineraries for Indian tourists. Your priority is creating routes that minimize travel time by grouping nearby attractions together. Plan each day around a specific geographical zone or district. Consider local transportation, traffic patterns, and walking distances. Include specific landmark names, realistic travel times, and practical routing advice. Always respond with valid JSON only."
                 },
                 {"role": "user", "content": prompt}
             ],
