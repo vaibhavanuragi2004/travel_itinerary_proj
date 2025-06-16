@@ -120,6 +120,15 @@ def view_itinerary(itinerary_id):
 
 
 
+@app.route('/tracking/<int:itinerary_id>')
+def tracking(itinerary_id):
+    itinerary = TravelItinerary.query.get_or_404(itinerary_id)
+    checkpoints = Checkpoint.query.filter_by(itinerary_id=itinerary_id).order_by(Checkpoint.day, Checkpoint.time).all()
+    
+    return render_template('tracking.html', 
+                         itinerary=itinerary, 
+                         checkpoints=checkpoints)
+
 @app.route('/complete_checkpoint/<int:checkpoint_id>', methods=['POST'])
 def complete_checkpoint(checkpoint_id):
     checkpoint = Checkpoint.query.get_or_404(checkpoint_id)
