@@ -511,11 +511,28 @@ if ('serviceWorker' in navigator) {
 // Check for weather alerts every hour
 setInterval(checkWeatherAlerts, 3600000);
 
+// Initialize notification permissions check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if notifications are already granted
+    if ('Notification' in window && Notification.permission === 'granted') {
+        const btn = document.getElementById('enableNotifications');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Notifications Enabled';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-success');
+            btn.disabled = true;
+            // Start checking for weather alerts automatically
+            checkWeatherAlerts();
+        }
+    }
+});
+
 // Export functions for global access
 window.TravelAI = {
     showAlert,
     validateForm,
     handleCheckpointCompletion,
     suggestDestinations,
-    requestNotificationPermission
+    requestNotificationPermission,
+    checkWeatherAlerts
 };
