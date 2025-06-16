@@ -378,18 +378,7 @@ function handleCheckpointCompletion(checkpointId) {
     }
 }
 
-// Real-time clock for tracking page
-function updateTrackingTime() {
-    const timeElements = document.querySelectorAll('.current-time');
-    timeElements.forEach(element => {
-        element.textContent = new Date().toLocaleTimeString();
-    });
-}
 
-// Update time every second on tracking page
-if (window.location.pathname.includes('/tracking/')) {
-    setInterval(updateTrackingTime, 1000);
-}
 
 // Destination suggestions styling
 const style = document.createElement('style');
