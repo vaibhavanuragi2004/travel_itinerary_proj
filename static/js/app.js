@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize date validation
     initializeDateValidation();
+    
+    // Initialize weather notifications
+    const notificationBtn = document.getElementById('enableNotifications');
+    if (notificationBtn) {
+        notificationBtn.addEventListener('click', function() {
+            window.TravelAI.requestNotificationPermission();
+        });
+    }
 });
 
 function initializeApp() {

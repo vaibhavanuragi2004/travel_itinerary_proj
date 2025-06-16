@@ -2,8 +2,9 @@ from flask import render_template, request, redirect, url_for, flash, jsonify
 from app import app, db
 from models import TravelItinerary, Checkpoint
 from ai_service import generate_travel_itinerary
+from weather_service import weather_service
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @app.route('/')
 def index():
@@ -44,7 +45,9 @@ def generate_itinerary():
         itinerary = TravelItinerary(
             destination=destination,
             duration=duration,
-            budget=budget
+            budget=budget,
+            start_date=start_date.date() if start_date_str else None,
+            end_date=end_date.date() if end_date_str else None
         )
         itinerary.set_interests_list(interests)
         itinerary.set_itinerary_data(itinerary_data)
@@ -164,6 +167,56 @@ def reorder_checkpoints():
         db.session.rollback()
         app.logger.error(f"Error reordering checkpoints: {e}")
         return jsonify({'success': False, 'error': 'Failed to reorder checkpoints'})
+
+@app.route('/api/weather-alerts', methods=['GET'])
+def get_weather_alerts():
+    """API endpoint to get weather alerts for upcoming trips"""
+    try:
+        alerts = []
+        tomorrow = datetime.now().date() + timedelta(days=1)
+        
+        # Get all itineraries with start dates in the next 7 days
+        upcoming_itineraries = TravelItinerary.query.filter(
+            TravelItinerary.start_date >= tomorrow,
+            TravelItinerary.start_date <= tomorrow + timedelta(days=7)
+        ).all()
+        
+        for itinerary in upcoming_itineraries:
+            if itinerary.start_date:
+                weather_alert = weather_service.check_severe_weather(
+                    itinerary.destination, 
+                    datetime.combine(itinerary.start_date, datetime.min.time())
+                )
+                
+                if weather_alert:
+                    alerts.append({
+                        'destination': itinerary.destination,
+                        'travel_date': itinerary.start_date.isoformat(),
+                        'severity': weather_alert['severity'],
+                        'weather': {
+                            'description': weather_alert['alert_message'],
+                            'temp': weather_alert['conditions'][0]['temperature'] if weather_alert['conditions'] else 0
+                        }
+                    })
+        
+        return jsonify(alerts)
+        
+    except Exception as e:
+        app.logger.error(f"Error getting weather alerts: {e}")
+        return jsonify([])
+
+@app.route('/api/weather/<destination>', methods=['GET'])
+def get_destination_weather(destination):
+    """Get current weather for a destination"""
+    try:
+        weather_data = weather_service.get_current_weather(destination)
+        if weather_data:
+            return jsonify(weather_data)
+        else:
+            return jsonify({'error': 'Weather data not available'}), 404
+    except Exception as e:
+        app.logger.error(f"Error getting weather for {destination}: {e}")
+        return jsonify({'error': 'Weather service unavailable'}), 500
 
 @app.errorhandler(404)
 def not_found(error):
