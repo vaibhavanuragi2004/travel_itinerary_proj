@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Auto-save form data
     enableFormAutoSave();
+    
+    // Initialize date validation
+    initializeDateValidation();
 });
 
 function initializeApp() {
@@ -415,10 +418,96 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+function initializeDateValidation() {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    
+    if (startDateInput && endDateInput) {
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.min = today;
+        endDateInput.min = today;
+        
+        startDateInput.addEventListener('change', function() {
+            const startDate = new Date(this.value);
+            const minEndDate = new Date(startDate);
+            minEndDate.setDate(minEndDate.getDate() + 1);
+            endDateInput.min = minEndDate.toISOString().split('T')[0];
+            
+            if (endDateInput.value && new Date(endDateInput.value) <= startDate) {
+                endDateInput.value = minEndDate.toISOString().split('T')[0];
+            }
+        });
+        
+        endDateInput.addEventListener('change', function() {
+            const endDate = new Date(this.value);
+            const startDate = new Date(startDateInput.value);
+            
+            if (startDate && endDate <= startDate) {
+                showAlert('End date must be after start date', 'warning');
+                this.value = '';
+            }
+        });
+    }
+}
+
+// Weather notification system
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showAlert('Weather alerts enabled for your trips', 'success');
+            }
+        });
+    }
+}
+
+function showWeatherAlert(destination, weatherData) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification(`Weather Alert: ${destination}`, {
+            body: `${weatherData.description}. Temperature: ${weatherData.temp}°C`,
+            icon: '/static/images/weather-icon.png',
+            badge: '/static/images/app-icon.png'
+        });
+        
+        notification.onclick = function() {
+            window.focus();
+            this.close();
+        };
+    }
+}
+
+// Check weather for upcoming trips
+async function checkWeatherAlerts() {
+    try {
+        const response = await fetch('/api/weather-alerts');
+        const alerts = await response.json();
+        
+        alerts.forEach(alert => {
+            if (alert.severity === 'high') {
+                showWeatherAlert(alert.destination, alert.weather);
+            }
+        });
+    } catch (error) {
+        console.log('Weather service unavailable');
+    }
+}
+
+// Initialize weather alerts on page load
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js').then(registration => {
+        console.log('Service Worker registered');
+    });
+}
+
+// Check for weather alerts every hour
+setInterval(checkWeatherAlerts, 3600000);
+
 // Export functions for global access
 window.TravelAI = {
     showAlert,
     validateForm,
     handleCheckpointCompletion,
-    suggestDestinations
+    suggestDestinations,
+    requestNotificationPermission
 };

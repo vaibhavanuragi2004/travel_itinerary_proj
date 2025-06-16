@@ -7,6 +7,8 @@ class TravelItinerary(db.Model):
     destination = db.Column(db.String(200), nullable=False)
     duration = db.Column(db.Integer, nullable=False)  # days
     budget = db.Column(db.Float, nullable=False)
+    start_date = db.Column(db.Date, nullable=True)  # Travel start date
+    end_date = db.Column(db.Date, nullable=True)    # Travel end date
     interests = db.Column(db.Text)  # JSON string of interests
     itinerary_data = db.Column(db.Text)  # JSON string of generated itinerary
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -62,16 +62,23 @@
                                 <div class="form-text">Enter your dream destination in India</div>
                             </div>
 
-                            <!-- Duration and Budget Row -->
+                            <!-- Travel Dates and Budget Row -->
                             <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <label for="duration" class="form-label fw-semibold">
-                                        <i class="fas fa-calendar-alt text-primary me-2"></i>Duration
+                                    <label for="start_date" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>Travel Dates
                                     </label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control form-control-lg" id="duration" 
-                                               name="duration" min="1" max="30" placeholder="7" required>
-                                        <span class="input-group-text">days</span>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="date" class="form-control" id="start_date" 
+                                                   name="start_date" required>
+                                            <div class="form-text small">Start Date</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="date" class="form-control" id="end_date" 
+                                                   name="end_date" required>
+                                            <div class="form-text small">End Date</div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
