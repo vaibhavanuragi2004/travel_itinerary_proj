@@ -55,24 +55,15 @@
                         </div>
                         {% endif %}
                         
-                        <div class="progress mb-3">
-                            {% set total = itinerary.checkpoints|length %}
-                            {% set completed = itinerary.checkpoints|selectattr('is_completed')|list|length %}
-                            {% set progress = (completed / total * 100) if total > 0 else 0 %}
-                            <div class="progress-bar bg-success" style="width: {{ progress }}%"></div>
-                        </div>
                         <small class="text-muted">
-                            {{ completed if total > 0 else 0 }} of {{ total }} checkpoints completed
+                            {% set total = itinerary.checkpoints|length %}
+                            {{ total }} activities planned
                         </small>
                         
                         <div class="card-actions mt-3">
                             <a href="{{ url_for('view_itinerary', itinerary_id=itinerary.id) }}" 
-                               class="btn btn-primary btn-sm">
+                               class="btn btn-primary">
                                 <i class="fas fa-eye me-1"></i>View Details
-                            </a>
-                            <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" 
-                               class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-location-arrow me-1"></i>Track
                             </a>
                         </div>
                     </div>

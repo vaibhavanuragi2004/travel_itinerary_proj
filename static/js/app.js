@@ -378,45 +378,7 @@ function handleCheckpointCompletion(checkpointId) {
     }
 }
 
-// Real-time clock for tracking page
-function updateTrackingTime() {
-    const timeElements = document.querySelectorAll('.current-time');
-    timeElements.forEach(element => {
-        element.textContent = new Date().toLocaleTimeString();
-    });
-    
-    // Highlight current activity based on time
-    highlightCurrentActivity();
-}
 
-// Highlight current activity based on current time
-function highlightCurrentActivity() {
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    
-    document.querySelectorAll('.timeline-item').forEach(item => {
-        const timeText = item.querySelector('.marker-time')?.textContent;
-        if (timeText) {
-            const [hours, minutes] = timeText.split(':').map(Number);
-            const itemTime = hours * 60 + minutes;
-            const card = item.querySelector('.activity-card');
-            
-            // Highlight if within 30 minutes of current time
-            if (Math.abs(currentTime - itemTime) <= 30) {
-                card.classList.add('current');
-            } else if (Math.abs(currentTime - itemTime) <= 60) {
-                card.classList.add('highlighted');
-            } else {
-                card.classList.remove('current', 'highlighted');
-            }
-        }
-    });
-}
-
-// Update time every second on tracking page
-if (window.location.pathname.includes('/tracking/')) {
-    setInterval(updateTrackingTime, 1000);
-}
 
 // Destination suggestions styling
 const style = document.createElement('style');
