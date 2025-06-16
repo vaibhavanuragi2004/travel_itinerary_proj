@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
 # Weather API configuration
-OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
+OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY", "6f88d31629b253fb97526c12ca07a172")
 WEATHER_API_BASE_URL = "https://api.openweathermap.org/data/2.5"
 
 class WeatherService:
