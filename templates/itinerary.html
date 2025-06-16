@@ -125,11 +125,22 @@
                             {% for checkpoint in day_data %}
                             <div class="timeline-item {{ 'completed' if checkpoint.is_completed else '' }}" data-checkpoint-id="{{ checkpoint.id }}">
                                 <div class="timeline-marker">
-                                    <div class="marker-dot {{ 'completed' if checkpoint.is_completed else '' }}">
+                                    <div class="marker-time">{{ checkpoint.time }}</div>
+                                    <div class="marker-icon {{ 'completed' if checkpoint.is_completed else '' }}">
                                         {% if checkpoint.is_completed %}
                                             <i class="fas fa-check"></i>
+                                        {% elif 'temple' in checkpoint.location.lower() or 'mosque' in checkpoint.location.lower() or 'church' in checkpoint.location.lower() %}
+                                            <i class="fas fa-place-of-worship"></i>
+                                        {% elif 'museum' in checkpoint.location.lower() or 'palace' in checkpoint.location.lower() or 'fort' in checkpoint.location.lower() %}
+                                            <i class="fas fa-university"></i>
+                                        {% elif 'restaurant' in checkpoint.activity.lower() or 'food' in checkpoint.activity.lower() or 'eat' in checkpoint.activity.lower() %}
+                                            <i class="fas fa-utensils"></i>
+                                        {% elif 'shopping' in checkpoint.activity.lower() or 'market' in checkpoint.activity.lower() %}
+                                            <i class="fas fa-shopping-bag"></i>
+                                        {% elif 'beach' in checkpoint.location.lower() or 'park' in checkpoint.location.lower() %}
+                                            <i class="fas fa-tree"></i>
                                         {% else %}
-                                            <span class="marker-time">{{ checkpoint.time.split(':')[0] }}</span>
+                                            <i class="fas fa-map-marker-alt"></i>
                                         {% endif %}
                                     </div>
                                     <div class="drag-handle">

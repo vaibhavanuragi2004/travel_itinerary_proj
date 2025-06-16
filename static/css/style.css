@@ -1,11 +1,12 @@
-/* Custom CSS Variables for Indian Travel Theme */
+/* Custom CSS Variables for Clean Travel Theme */
 :root {
-    --primary: 255 107 53; /* #FF6B35 - vibrant orange */
-    --secondary: 0 78 137; /* #004E89 - deep blue */
+    --primary: 52 152 219; /* #3498DB - soft blue */
+    --secondary: 52 73 94; /* #34495E - dark grey */
     --accent: 255 210 63; /* #FFD23F - golden yellow */
-    --background: 248 249 250; /* #F8F9FA - light grey */
+    --background: 255 255 255; /* #FFFFFF - clean white */
     --text: 44 62 80; /* #2C3E50 - dark blue-grey */
     --success: 39 174 96; /* #27AE60 - green */
+    --highlight: 255 243 205; /* #FFF3CD - subtle yellow */
     --spacing: 16px;
 }
 
@@ -210,59 +211,54 @@ h1, h2, h3, h4, h5, h6 {
 
 .timeline-activities {
     position: relative;
-    padding-left: 50px;
-}
-
-.timeline-activities::before {
-    content: '';
-    position: absolute;
-    left: 25px;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(to bottom, hsl(var(--primary)), hsl(var(--accent)));
-    border-radius: 2px;
+    padding-left: 0;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .timeline-item {
     position: relative;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     display: flex;
     align-items: flex-start;
+    gap: 20px;
 }
 
 .timeline-marker {
-    position: relative;
-    margin-right: 25px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-}
-
-.marker-dot {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: white;
-    border: 4px solid hsl(var(--primary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.marker-dot.completed {
-    background: hsl(var(--success));
-    border-color: hsl(var(--success));
-    color: white;
+    min-width: 80px;
+    text-align: center;
 }
 
 .marker-time {
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: hsl(var(--primary));
+    background: rgba(52, 152, 219, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+
+.marker-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.marker-icon.completed {
+    background: hsl(var(--success));
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
 }
 
 .drag-handle {
@@ -295,13 +291,28 @@ h1, h2, h3, h4, h5, h6 {
 
 .activity-card {
     background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid #f0f0f0;
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    flex: 1;
+}
+
+.activity-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.activity-card.current {
+    border: 2px solid hsl(var(--success));
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.15);
+}
+
+.activity-card.highlighted {
+    background: hsl(var(--highlight));
+    border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 .activity-card::before {
