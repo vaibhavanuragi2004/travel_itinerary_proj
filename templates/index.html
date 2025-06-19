@@ -51,7 +51,11 @@
                         <p class="mb-0 opacity-75">Tell us about your travel preferences</p>
                     </div>
                     <div class="card-body p-4">
-                        <form action="{{ url_for('generate_itinerary') }}" method="POST" id="itineraryForm">
+                        <!-- React Enhanced Form Container -->
+                        <div id="react-itinerary-form">
+                            <!-- Fallback form for users without JavaScript -->
+                        </div>
+                        <form action="{{ url_for('generate_itinerary') }}" method="POST" id="itineraryForm" style="display: none;">
                             <!-- Destination -->
                             <div class="mb-4">
                                 <label for="destination" class="form-label fw-semibold">

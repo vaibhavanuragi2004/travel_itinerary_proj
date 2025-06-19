@@ -222,6 +222,48 @@ def get_destination_weather(destination):
         app.logger.error(f"Error getting weather for {destination}: {e}")
         return jsonify({'error': 'Weather service unavailable'}), 500
 
+@app.route('/api/itinerary/<int:itinerary_id>/checkpoints', methods=['GET'])
+def get_itinerary_checkpoints(itinerary_id):
+    """Get checkpoints for React tracker component"""
+    try:
+        itinerary = TravelItinerary.query.get_or_404(itinerary_id)
+        checkpoints = Checkpoint.query.filter_by(itinerary_id=itinerary_id).order_by(Checkpoint.day, Checkpoint.time).all()
+        
+        # Find next incomplete checkpoint
+        next_checkpoint = None
+        for checkpoint in checkpoints:
+            if not checkpoint.is_completed:
+                next_checkpoint = {
+                    'id': checkpoint.id,
+                    'location': checkpoint.location,
+                    'time': checkpoint.time,
+                    'day': checkpoint.day
+                }
+                break
+        
+        checkpoints_data = []
+        for checkpoint in checkpoints:
+            checkpoints_data.append({
+                'id': checkpoint.id,
+                'location': checkpoint.location,
+                'activity': checkpoint.activity,
+                'time': checkpoint.time,
+                'day': checkpoint.day,
+                'estimated_cost': checkpoint.estimated_cost,
+                'is_completed': checkpoint.is_completed,
+                'completed_at': checkpoint.completed_at.isoformat() if checkpoint.completed_at else None,
+                'notes': checkpoint.notes
+            })
+        
+        return jsonify({
+            'checkpoints': checkpoints_data,
+            'next_checkpoint': next_checkpoint
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error getting checkpoints for itinerary {itinerary_id}: {e}")
+        return jsonify({'error': 'Failed to load checkpoints'}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

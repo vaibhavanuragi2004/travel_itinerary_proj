@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/react-components.css') }}">
 </head>
 <body>
     <!-- Navigation -->
@@ -86,6 +87,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <!-- React Bundle -->
+    <script src="{{ url_for('static', filename='js/react-bundle.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
