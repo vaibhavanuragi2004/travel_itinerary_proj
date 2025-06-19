@@ -27258,10 +27258,21 @@ const ItineraryForm = () => {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams(formData)
+        body: new URLSearchParams({
+          ...formData,
+          interests: formData.interests
+        })
       });
-      if (response.ok) {
-        window.location.href = await response.text();
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else if (response.ok) {
+        // Handle successful response
+        const result = await response.text();
+        if (result.includes('/itinerary/')) {
+          window.location.href = result;
+        } else {
+          window.location.reload();
+        }
       } else {
         throw new Error('Failed to generate itinerary');
       }
@@ -27872,32 +27883,50 @@ __webpack_require__.r(__webpack_exports__);
 
 // Initialize React components based on page
 document.addEventListener('DOMContentLoaded', function () {
-  // Itinerary Form Component
-  const formContainer = document.getElementById('react-itinerary-form');
-  if (formContainer) {
-    const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(formContainer);
-    root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ItineraryForm__WEBPACK_IMPORTED_MODULE_2__["default"], null));
-  }
+  // Small delay to ensure all scripts are loaded
+  setTimeout(() => {
+    // Itinerary Form Component
+    const formContainer = document.getElementById('react-itinerary-form');
+    if (formContainer) {
+      // Hide loading spinner
+      const loadingDiv = document.getElementById('form-loading');
+      if (loadingDiv) loadingDiv.style.display = 'none';
 
-  // Itinerary Tracker Component
-  const trackerContainer = document.getElementById('react-tracker');
-  if (trackerContainer) {
-    const itineraryId = trackerContainer.dataset.itineraryId;
-    const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(trackerContainer);
-    root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ItineraryTracker__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      itineraryId: itineraryId
-    }));
-  }
+      // Show fallback form if React fails
+      const fallbackForm = document.getElementById('fallback-form');
+      try {
+        const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(formContainer);
+        root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ItineraryForm__WEBPACK_IMPORTED_MODULE_2__["default"], null));
+        console.log('React form loaded successfully');
+      } catch (error) {
+        console.error('React form failed to load:', error);
+        if (fallbackForm) {
+          fallbackForm.style.display = 'block';
+          formContainer.style.display = 'none';
+        }
+      }
+    }
 
-  // Weather Widget Component
-  const weatherContainer = document.getElementById('react-weather');
-  if (weatherContainer) {
-    const destination = weatherContainer.dataset.destination;
-    const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(weatherContainer);
-    root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_WeatherWidget__WEBPACK_IMPORTED_MODULE_4__["default"], {
-      destination: destination
-    }));
-  }
+    // Itinerary Tracker Component
+    const trackerContainer = document.getElementById('react-tracker');
+    if (trackerContainer) {
+      const itineraryId = trackerContainer.dataset.itineraryId;
+      const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(trackerContainer);
+      root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ItineraryTracker__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        itineraryId: itineraryId
+      }));
+    }
+
+    // Weather Widget Component
+    const weatherContainer = document.getElementById('react-weather');
+    if (weatherContainer) {
+      const destination = weatherContainer.dataset.destination;
+      const root = react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot(weatherContainer);
+      root.render(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_WeatherWidget__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        destination: destination
+      }));
+    }
+  }, 100);
 });
 })();
 

@@ -99,11 +99,22 @@ const ItineraryForm = () => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: new URLSearchParams(formData)
+                body: new URLSearchParams({
+                    ...formData,
+                    interests: formData.interests
+                })
             });
             
-            if (response.ok) {
-                window.location.href = await response.text();
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else if (response.ok) {
+                // Handle successful response
+                const result = await response.text();
+                if (result.includes('/itinerary/')) {
+                    window.location.href = result;
+                } else {
+                    window.location.reload();
+                }
             } else {
                 throw new Error('Failed to generate itinerary');
             }
