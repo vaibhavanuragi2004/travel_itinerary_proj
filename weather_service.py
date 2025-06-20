@@ -17,26 +17,55 @@ class WeatherService:
             return None
             
         geocoding_url = f"http://api.openweathermap.org/geo/1.0/direct"
-        params = {
-            'q': f"{city_name},IN",  # Restrict to India
-            'limit': 1,
-            'appid': self.api_key
+        
+        # Try different query formats
+        search_queries = [
+            f"{city_name},IN",  # Original format
+            f"{city_name},India",  # With full country name
+            city_name,  # Just the city name
+        ]
+        
+        # Special handling for states/regions
+        state_capitals = {
+            'Punjab': 'Chandigarh',
+            'Himachal Pradesh': 'Shimla',
+            'Rajasthan': 'Jaipur',
+            'Kerala': 'Thiruvananthapuram',
+            'Tamil Nadu': 'Chennai',
+            'Karnataka': 'Bangalore',
+            'Goa': 'Panaji',
+            'Gujarat': 'Gandhinagar',
+            'Maharashtra': 'Mumbai'
         }
         
-        try:
-            response = requests.get(geocoding_url, params=params, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-            
-            if data:
-                return {
-                    'lat': data[0]['lat'],
-                    'lon': data[0]['lon'],
-                    'name': data[0]['name']
-                }
-        except Exception as e:
-            print(f"Error getting coordinates for {city_name}: {e}")
+        # If it's a state name, use its capital
+        clean_name = city_name.replace(', India', '').strip()
+        if clean_name in state_capitals:
+            search_queries.insert(0, f"{state_capitals[clean_name]},IN")
         
+        for query in search_queries:
+            try:
+                params = {
+                    'q': query,
+                    'limit': 1,
+                    'appid': self.api_key
+                }
+                
+                response = requests.get(geocoding_url, params=params, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+                
+                if data and len(data) > 0:
+                    return {
+                        'lat': data[0]['lat'],
+                        'lon': data[0]['lon'],
+                        'name': data[0]['name']
+                    }
+            except Exception as e:
+                print(f"Error with query '{query}': {e}")
+                continue
+        
+        print(f"No coordinates found for {city_name}")
         return None
     
     def get_current_weather(self, city_name: str) -> Optional[Dict]:
@@ -62,14 +91,25 @@ class WeatherService:
             data = response.json()
             
             return {
-                'temperature': data['main']['temp'],
-                'feels_like': data['main']['feels_like'],
-                'humidity': data['main']['humidity'],
-                'description': data['weather'][0]['description'],
-                'main': data['weather'][0]['main'],
-                'wind_speed': data.get('wind', {}).get('speed', 0),
-                'visibility': data.get('visibility', 0) / 1000,  # Convert to km
-                'city': coords['name']
+                'main': {
+                    'temp': data['main']['temp'],
+                    'feels_like': data['main']['feels_like'],
+                    'humidity': data['main']['humidity'],
+                    'pressure': data['main'].get('pressure', 0)
+                },
+                'weather': [{
+                    'main': data['weather'][0]['main'],
+                    'description': data['weather'][0]['description'],
+                    'icon': data['weather'][0].get('icon', '')
+                }],
+                'wind': {
+                    'speed': data.get('wind', {}).get('speed', 0)
+                },
+                'visibility': data.get('visibility', 10000),
+                'name': coords['name'],
+                'sys': {
+                    'country': data.get('sys', {}).get('country', 'IN')
+                }
             }
         except Exception as e:
             print(f"Error getting weather for {city_name}: {e}")
