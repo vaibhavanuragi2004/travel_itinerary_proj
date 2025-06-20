@@ -1,5 +1,6 @@
 import json
 import os
+from budget_optimizer import BudgetOptimizer
 from groq import Groq
 
 # Using Groq for open source LLM models
@@ -63,7 +64,13 @@ def generate_travel_itinerary(destination, duration, budget, interests):
     if not groq_client:
         print("Groq API key not configured. Using basic itinerary template.")
         return generate_basic_itinerary(destination, duration, budget, interests)
-        
+    
+    # Initialize budget optimizer
+    budget_optimizer = BudgetOptimizer()
+    optimized_budget = budget_optimizer.get_budget_recommendations(
+        destination, duration, budget, interests
+    )
+    
     try:
         interests_str = ", ".join(interests) if interests else "general sightseeing"
         
@@ -108,13 +115,7 @@ Required JSON structure:
   "travel_tips": [
     "Location-specific tips including best travel routes and timing advice"
   ],
-  "budget_breakdown": {{
-    "accommodation": 10000,
-    "food": 5000,
-    "local_transportation": 3000,
-    "activities": 5000,
-    "shopping": 2000
-  }}
+  "budget_breakdown": {json.dumps(optimized_budget['budget_breakdown'], indent=4)}
 }}
 
 Plan each day to cover one geographical area/zone efficiently. Ensure realistic travel times and costs within the specified budget."""
