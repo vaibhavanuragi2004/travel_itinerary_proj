@@ -24,6 +24,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Global Agoda booking function
+window.bookWithAgoda = function(destination, duration) {
+    const checkIn = new Date();
+    checkIn.setDate(checkIn.getDate() + 1);
+    const checkOut = new Date(checkIn);
+    checkOut.setDate(checkOut.getDate() + parseInt(duration));
+    
+    const formatDate = (date) => {
+        return date.getFullYear() + '-' + 
+               String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+               String(date.getDate()).padStart(2, '0');
+    };
+    
+    const agodaUrl = 'https://www.agoda.com/search?' + 
+        'city=' + encodeURIComponent(destination) + 
+        '&checkIn=' + formatDate(checkIn) + 
+        '&checkOut=' + formatDate(checkOut) + 
+        '&rooms=1&adults=2&children=0' +
+        '&cid=1844104' +
+        '&tag=travelai' +
+        '&utm_source=travelai&utm_medium=referral&utm_campaign=partnership';
+    
+    console.log('Agoda booking clicked:', {destination, duration, url: agodaUrl});
+    window.open(agodaUrl, '_blank');
+};
+
 function initializeApp() {
     console.log('TravelAI App Initialized');
     
