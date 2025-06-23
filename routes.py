@@ -46,9 +46,7 @@ def generate_itinerary():
         itinerary = TravelItinerary(
             destination=destination,
             duration=duration,
-            budget=budget,
-            start_date=start_date.date() if start_date_str else None,
-            end_date=end_date.date() if end_date_str else None
+            budget=budget
         )
         itinerary.set_interests_list(interests)
         itinerary.set_itinerary_data(itinerary_data)
@@ -180,29 +178,7 @@ def get_weather_alerts():
         alerts = []
         tomorrow = datetime.now().date() + timedelta(days=1)
         
-        # Get all itineraries with start dates in the next 7 days
-        upcoming_itineraries = TravelItinerary.query.filter(
-            TravelItinerary.start_date >= tomorrow,
-            TravelItinerary.start_date <= tomorrow + timedelta(days=7)
-        ).all()
-        
-        for itinerary in upcoming_itineraries:
-            if itinerary.start_date:
-                weather_alert = weather_service.check_severe_weather(
-                    itinerary.destination, 
-                    datetime.combine(itinerary.start_date, datetime.min.time())
-                )
-                
-                if weather_alert:
-                    alerts.append({
-                        'destination': itinerary.destination,
-                        'travel_date': itinerary.start_date.isoformat(),
-                        'severity': weather_alert['severity'],
-                        'weather': {
-                            'description': weather_alert['alert_message'],
-                            'temp': weather_alert['conditions'][0]['temperature'] if weather_alert['conditions'] else 0
-                        }
-                    })
+        # Return empty alerts since we don't have travel dates in current schema
         
         return jsonify(alerts)
         
