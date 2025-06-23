@@ -3,37 +3,101 @@
 {% block title %}Create Your Perfect Indian Travel Itinerary - TravelAI{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Hero Section with Slideshow -->
 <section class="hero-section">
+    <div class="hero-slideshow">
+        <div class="slide active" style="background-image: url('/static/images/Amazing Indian architecture__1750700601696.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h3>Amazing Indian Architecture</h3>
+                <p>Explore the intricate beauty of Hawa Mahal, Jaipur</p>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('/static/images/World\'s Largest Bird Sculpture Jatayu Earth\'s Centre, Kollam_1750700611344.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h3>Jatayu Earth's Centre</h3>
+                <p>World's largest bird sculpture in Kerala</p>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('/static/images/Himalayas on Instagram_ \"✔ IG  @nomadtreveller Kullu, Himachal Pradesh #himalayasin  _ #kullu #kullumanali #himachalpradesh #himachal #himachalgram #himachaltourism…\"_1750700611345.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h3>Kullu Valley</h3>
+                <p>Breathtaking Himalayan landscapes in Himachal Pradesh</p>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('/static/images/iskcon temple_1750700611345.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h3>ISKCON Temple</h3>
+                <p>Sacred architecture and spiritual experiences</p>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('/static/images/pexels-imadclicks-11879563_1750700611346.jpg');">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h3>Heritage Architecture</h3>
+                <p>Discover India's rich historical monuments</p>
+            </div>
+        </div>
+        
+        <!-- Slideshow Navigation -->
+        <div class="slideshow-nav">
+            <button class="nav-btn prev-btn" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn next-btn" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- Slide Indicators -->
+        <div class="slide-indicators">
+            <span class="indicator active" onclick="currentSlide(1)"></span>
+            <span class="indicator" onclick="currentSlide(2)"></span>
+            <span class="indicator" onclick="currentSlide(3)"></span>
+            <span class="indicator" onclick="currentSlide(4)"></span>
+            <span class="indicator" onclick="currentSlide(5)"></span>
+        </div>
+    </div>
+    
+    <div class="hero-overlay"></div>
     <div class="container">
-        <div class="row align-items-center min-vh-75">
+        <div class="row align-items-center min-vh-100">
             <div class="col-lg-6">
-                <h1 class="display-4 fw-bold text-primary mb-4">
-                    Plan Your Perfect <span class="text-accent">Indian Adventure</span>
-                </h1>
-                <p class="lead mb-4">
-                    AI-powered travel planning designed specifically for Indian tourists. 
-                    Get personalized itineraries with checkpoints, budget tracking, and local insights.
-                </p>
-                <div class="hero-features mb-4">
-                    <div class="feature-item">
-                        <i class="fas fa-robot text-accent me-2"></i>
-                        <span>AI-Powered Planning</span>
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        Discover India with <span class="text-accent">AI-Powered</span> Travel Planning
+                    </h1>
+                    <p class="lead text-white mb-4">
+                        Create personalized itineraries, get real-time weather updates, optimize your budget, 
+                        and explore India's incredible diversity with our intelligent travel companion.
+                    </p>
+                    <div class="hero-features mb-4">
+                        <div class="feature-item">
+                            <i class="fas fa-robot text-accent me-2"></i>
+                            <span class="text-white">AI-Powered Planning</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-map-marker-alt text-accent me-2"></i>
+                            <span class="text-white">Checkpoint Tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-rupee-sign text-accent me-2"></i>
+                            <span class="text-white">Budget Management</span>
+                        </div>
                     </div>
-                    <div class="feature-item">
-                        <i class="fas fa-map-marker-alt text-accent me-2"></i>
-                        <span>Checkpoint Tracking</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-rupee-sign text-accent me-2"></i>
-                        <span>Budget Management</span>
-                    </div>
+                    <a href="#planning-form" class="btn btn-accent btn-lg px-5 py-3">
+                        <i class="fas fa-rocket me-2"></i>Start Planning Now
+                    </a>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-image">
-                    <img src="https://pixabay.com/get/g2a85fbcf46bd8380cd75feb1bce5241d8b9935f3bb98c9c5921c64d1b03efe4148e05ac8c0870506c00b65d13c643fecf57fd423e4ee9106f98685ce02ec3c00_1280.jpg" 
-                         alt="Indian landmarks" class="img-fluid rounded-4 shadow-lg">
+                <div class="hero-image-container">
+                    <div class="hero-icon-wrapper">
+                        <i class="fas fa-map-marked-alt hero-icon text-accent"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,7 +116,7 @@
                     </div>
                     <div class="card-body p-4">
                         <!-- React Enhanced Form Container -->
-                        <div id="react-itinerary-form">
+                        <div id="react-itinerary-form" id="planning-form">
                             <!-- Loading state while React loads -->
                             <div class="text-center py-4" id="form-loading">
                                 <div class="spinner-border text-primary" role="status">
