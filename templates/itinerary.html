@@ -67,6 +67,19 @@
                                     <div class="stat-label">Remaining</div>
                                 </div>
                             </div>
+                            
+                            <!-- Action buttons -->
+                            <div class="d-flex gap-2 mt-3 justify-content-md-end">
+                                <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-play me-1"></i>Start Journey
+                                </a>
+                                <a href="{{ url_for('chatbot', itinerary_id=itinerary.id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-robot me-1"></i>Travel Assistant
+                                </a>
+                                <a href="{{ url_for('my_itineraries') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-arrow-left me-1"></i>Back
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
