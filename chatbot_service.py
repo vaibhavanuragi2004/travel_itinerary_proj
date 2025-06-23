@@ -1,192 +1,228 @@
 import json
-import os
+import logging
 from datetime import datetime
-from groq import Groq
-from weather_service import WeatherService
-from budget_optimizer import BudgetOptimizer
+from typing import Dict, List, Optional
+import os
 
-# Using Groq for chatbot functionality
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-groq_client = None
-
-if GROQ_API_KEY:
-    try:
-        groq_client = Groq(api_key=GROQ_API_KEY)
-        print("Chatbot Groq client initialized successfully")
-    except Exception as e:
-        print(f"Error initializing Groq client for chatbot: {e}")
+# LangChain imports
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.chains import ConversationChain
 
 class TravelChatbot:
     def __init__(self):
-        self.weather_service = WeatherService()
-        self.budget_optimizer = BudgetOptimizer()
-        self.conversation_history = []
-        
+        try:
+            # Initialize LangChain LLM
+            self.llm = ChatGroq(
+                groq_api_key=os.environ.get("GROQ_API_KEY"),
+                model_name="llama-3.1-8b-instant",
+                temperature=0.7,
+                max_tokens=300
+            )
+            
+            # Initialize conversation memory
+            self.memory = ConversationBufferWindowMemory(
+                k=10,  # Keep last 10 exchanges
+                return_messages=True
+            )
+            
+            # Create conversation prompt template
+            self.prompt = ChatPromptTemplate.from_messages([
+                ("system", """You are an expert travel companion AI for Indian tourists. You provide helpful, 
+                accurate, and culturally-aware travel advice. You have access to real-time weather data 
+                and can help with:
+                
+                - Weather updates and travel recommendations
+                - Budget planning and cost-effective suggestions
+                - Cultural experiences and local recommendations
+                - Transportation and accommodation advice
+                - Food recommendations (considering Indian dietary preferences)
+                - Safety and practical travel tips
+                
+                Keep responses helpful but informative. If the question is about:
+                - Weather: Use current conditions and practical advice
+                - Budget: Give cost-effective suggestions 
+                - Activities: Suggest culturally relevant experiences
+                - Food: Recommend authentic local cuisine
+                - Transport: Provide practical travel tips for India
+                - Safety: Give responsible travel advice
+                
+                Respond in a friendly, knowledgeable tone. Keep responses under 200 words unless detailed explanation is needed."""),
+                MessagesPlaceholder(variable_name="history"),
+                ("human", "{input}")
+            ])
+            
+            # Create conversation chain
+            self.conversation = ConversationChain(
+                llm=self.llm,
+                memory=self.memory,
+                prompt=self.prompt,
+                verbose=True
+            )
+            
+            print("LangChain chatbot initialized successfully")
+        except Exception as e:
+            print(f"Error initializing LangChain chatbot: {e}")
+            self.llm = None
+            self.memory = None
+            self.conversation = None
+
     def get_context_from_itinerary(self, itinerary_data):
         """Extract relevant context from user's itinerary"""
-        if not itinerary_data:
-            return ""
-        
         try:
-            data = json.loads(itinerary_data) if isinstance(itinerary_data, str) else itinerary_data
+            if isinstance(itinerary_data, str):
+                itinerary_data = json.loads(itinerary_data)
+            
+            destination = itinerary_data.get('destination', 'Unknown')
+            duration = itinerary_data.get('duration', 0)
+            budget = itinerary_data.get('budget_breakdown', {})
+            
             context = f"""
-            User's Current Trip Context:
-            - Destination: {data.get('destination', 'Unknown')}
-            - Duration: {data.get('duration', 'Unknown')} days
-            - Total Budget: ₹{data.get('total_estimated_cost', 'Unknown')}
-            - Current Activities: {len(data.get('days', []))} days planned
+            Current Trip Context:
+            - Destination: {destination}
+            - Duration: {duration} days
+            - Budget breakdown: Accommodation ₹{budget.get('accommodation', 0)}, Food ₹{budget.get('food', 0)}, Transport ₹{budget.get('transport', 0)}
+            
+            You are helping with this specific trip. Provide contextual advice based on this itinerary.
             """
+            
             return context
-        except:
+        except Exception as e:
+            logging.error(f"Error extracting itinerary context: {e}")
             return ""
-    
+
     def generate_response(self, user_message, itinerary_context=None, user_preferences=None):
-        """Generate chatbot response using AI"""
-        if not groq_client:
+        """Generate chatbot response using LangChain"""
+        if not self.conversation:
             return self.get_fallback_response(user_message)
         
         try:
-            # Build context
-            context = "You are a helpful Indian travel companion chatbot. You provide practical, culturally-aware travel advice for Indian tourists."
-            
+            # Build context from itinerary if available
+            context_info = ""
             if itinerary_context:
-                context += self.get_context_from_itinerary(itinerary_context)
+                context_info = self.get_context_from_itinerary(itinerary_context)
+                # Add context to the conversation temporarily
+                if context_info:
+                    enhanced_message = f"Context: {context_info}\n\nUser question: {user_message}"
+                else:
+                    enhanced_message = user_message
+            else:
+                enhanced_message = user_message
             
-            if user_preferences:
-                context += f"\nUser Interests: {', '.join(user_preferences)}"
-            
-            # Add conversation history
-            conversation_context = ""
-            if self.conversation_history:
-                recent_history = self.conversation_history[-4:]  # Last 4 exchanges
-                for entry in recent_history:
-                    conversation_context += f"User: {entry.get('user', '')}\nBot: {entry.get('bot', '')}\n"
-            
-            prompt = f"""
-{context}
-
-Previous conversation:
-{conversation_context}
-
-Current user question: {user_message}
-
-Provide a helpful, practical response. Keep it conversational but informative. If the question is about:
-- Weather: Use current conditions and practical advice
-- Budget: Give cost-effective suggestions 
-- Activities: Suggest culturally relevant experiences
-- Food: Recommend authentic local cuisine
-- Transport: Provide practical travel tips for India
-- Safety: Give responsible travel advice
-
-Respond in a friendly, knowledgeable tone. Keep responses under 200 words unless detailed explanation is needed.
-"""
-
-            completion = groq_client.chat.completions.create(
-                model="llama-3.1-8b-instant",
-                messages=[
-                    {"role": "system", "content": "You are a helpful Indian travel companion chatbot."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=300,
-                temperature=0.7
-            )
-            
-            response = completion.choices[0].message.content.strip()
-            
-            # Store in conversation history
-            self.conversation_history.append({
-                'user': user_message,
-                'bot': response,
-                'timestamp': datetime.now().isoformat()
-            })
-            
-            # Keep only recent history
-            if len(self.conversation_history) > 10:
-                self.conversation_history = self.conversation_history[-10:]
+            # Generate response using LangChain conversation chain
+            response = self.conversation.predict(input=enhanced_message)
             
             return response
             
         except Exception as e:
-            print(f"Error generating chatbot response: {e}")
-            return self.get_fallback_response(user_message)
-    
+            logging.error(f"LangChain error generating chatbot response: {e}")
+            # Fallback to direct LLM call
+            try:
+                context_info = ""
+                if itinerary_context:
+                    context_info = self.get_context_from_itinerary(itinerary_context)
+                
+                messages = [
+                    ("system", f"""You are an expert travel companion AI for Indian tourists. 
+                    {context_info}
+                    
+                    Provide helpful, culturally-aware travel advice. Keep responses under 200 words."""),
+                    ("human", user_message)
+                ]
+                
+                response = self.llm.invoke(messages)
+                return response.content
+                
+            except Exception as fallback_error:
+                logging.error(f"Fallback chatbot error: {fallback_error}")
+                return self.get_fallback_response(user_message)
+
     def get_fallback_response(self, user_message):
         """Provide rule-based responses when AI is unavailable"""
         message_lower = user_message.lower()
         
-        # Weather queries
-        if any(word in message_lower for word in ['weather', 'rain', 'temperature', 'climate']):
-            return "I can help you check current weather conditions for your destination. Please specify which city you'd like weather information for."
+        if any(word in message_lower for word in ['weather', 'temperature', 'rain', 'climate']):
+            return "I'd recommend checking current weather conditions for your destination. Pack accordingly - light clothes for warm weather, rain gear during monsoon season, and layers for hill stations."
         
-        # Budget queries
-        elif any(word in message_lower for word in ['budget', 'cost', 'expensive', 'cheap', 'money']):
-            return "For budget planning, I can help you optimize costs based on your destination and travel style. What specific budget questions do you have?"
+        elif any(word in message_lower for word in ['budget', 'cost', 'money', 'expensive']):
+            return "For budget travel in India, consider staying in budget hotels or hostels, use public transport, eat at local restaurants, and look for free cultural activities. Street food is delicious and affordable!"
         
-        # Food queries
-        elif any(word in message_lower for word in ['food', 'restaurant', 'eat', 'cuisine', 'local']):
-            return "I'd love to help you discover authentic local cuisine! Which destination are you asking about? I can suggest traditional dishes and good restaurants."
+        elif any(word in message_lower for word in ['food', 'eat', 'restaurant', 'cuisine']):
+            return "Indian cuisine varies greatly by region. Try local specialties, but ensure the place looks clean. Start with milder dishes if you're not used to spicy food. Always drink bottled or filtered water."
         
-        # Transport queries
-        elif any(word in message_lower for word in ['transport', 'travel', 'bus', 'train', 'flight', 'taxi']):
-            return "For transportation advice, I can help you choose the best travel options. Are you asking about getting to your destination or local transport?"
-        
-        # Activities queries
-        elif any(word in message_lower for word in ['activity', 'things to do', 'attractions', 'sightseeing']):
-            return "I can suggest activities based on your interests! What type of experiences are you looking for - adventure, cultural, nature, or something else?"
-        
-        # Greetings
-        elif any(word in message_lower for word in ['hello', 'hi', 'help', 'start']):
-            return "Hello! I'm your travel companion. I can help you with weather updates, budget tips, local recommendations, and answer any travel questions about your trip. What would you like to know?"
+        elif any(word in message_lower for word in ['transport', 'travel', 'train', 'bus']):
+            return "Indian Railways is extensive and economical. Book in advance for longer routes. For local transport, try metro, buses, or app-based cabs. Auto-rickshaws are good for short distances."
         
         else:
-            return "I'm here to help with your travel questions! I can assist with weather, budget planning, local recommendations, activities, food suggestions, and transportation advice. What would you like to know about your trip?"
-    
+            return "I'm here to help with your travel questions! You can ask me about weather, budget tips, food recommendations, transportation, or local attractions."
+
     def get_contextual_suggestions(self, destination, interests=None):
-        """Generate proactive travel suggestions"""
-        try:
-            # Get weather context
-            weather_data = self.weather_service.get_current_weather(destination)
-            weather_context = ""
-            if weather_data:
-                temp = weather_data['main']['temp']
-                condition = weather_data['weather'][0]['description']
-                weather_context = f"Current weather in {destination}: {temp}°C, {condition}. "
-            
-            suggestions = []
-            
-            # Weather-based suggestions
-            if weather_data:
-                if temp > 35:
-                    suggestions.append("🌡️ It's quite hot! Consider indoor activities during midday and carry plenty of water.")
-                elif temp < 10:
-                    suggestions.append("🧥 Pack warm clothes! Perfect weather for hot drinks and cozy indoor experiences.")
-                elif 'rain' in condition.lower():
-                    suggestions.append("☔ Pack an umbrella and consider indoor attractions today.")
-            
-            # Interest-based suggestions
-            if interests:
-                if 'Adventure' in interests:
-                    suggestions.append("🏔️ Don't forget to check equipment rentals and book adventure activities in advance!")
-                if 'Food' in interests:
-                    suggestions.append("🍽️ Try booking food tours early - they fill up quickly in popular destinations!")
-                if 'Cultural' in interests:
-                    suggestions.append("🏛️ Many historical sites offer early morning visits with fewer crowds.")
-            
-            # Generic helpful tips
-            suggestions.append("💡 Tip: Download offline maps and keep emergency contacts handy.")
-            
+        """Generate proactive travel suggestions using LangChain"""
+        if not self.llm:
             return {
-                'weather_context': weather_context,
-                'suggestions': suggestions[:3]  # Limit to 3 suggestions
+                'weather_context': f"Check the current weather in {destination} before you travel.",
+                'suggestions': [
+                    f"Popular attractions in {destination}",
+                    "Local food specialties to try",
+                    "Best transportation options",
+                    "Cultural etiquette to follow"
+                ]
             }
+        
+        try:
+            interests_str = ", ".join(interests) if interests else "general tourism"
+            
+            prompt_template = """Provide 4 helpful travel suggestions for someone visiting {destination} who is interested in {interests}.
+            Return a JSON object with:
+            {{
+              "weather_context": "Brief weather advice for {destination}",
+              "suggestions": ["suggestion 1", "suggestion 2", "suggestion 3", "suggestion 4"]
+            }}"""
+            
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", "You are a travel expert. Return only valid JSON."),
+                ("human", prompt_template)
+            ])
+            
+            chain = prompt | self.llm
+            
+            response = chain.invoke({
+                "destination": destination,
+                "interests": interests_str
+            })
+            
+            content = response.content.strip()
+            
+            # Extract JSON if wrapped
+            if '```json' in content:
+                start = content.find('```json') + 7
+                end = content.find('```', start)
+                content = content[start:end].strip()
+            elif '```' in content:
+                start = content.find('```') + 3
+                end = content.find('```', start)
+                content = content[start:end].strip()
+            
+            suggestions_data = json.loads(content)
+            return suggestions_data
             
         except Exception as e:
-            print(f"Error generating contextual suggestions: {e}")
+            logging.error(f"LangChain error getting contextual suggestions: {e}")
             return {
-                'weather_context': "",
-                'suggestions': ["I'm here to help with any travel questions you have!"]
+                'weather_context': f"Check the current weather in {destination} before you travel.",
+                'suggestions': [
+                    f"Research popular attractions in {destination}",
+                    "Try local cuisine specialties", 
+                    "Learn about local customs and etiquette",
+                    "Plan your transportation in advance"
+                ]
             }
     
     def clear_history(self):
         """Clear conversation history"""
-        self.conversation_history = []
+        if self.memory:
+            self.memory.clear()
+        if hasattr(self, 'conversation_history'):
+            self.conversation_history = []

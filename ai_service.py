@@ -1,112 +1,162 @@
 import json
 import os
-from budget_optimizer import BudgetOptimizer
-from groq import Groq
+import logging
+from typing import Dict, List, Any
 
-# Using Groq for open source LLM models
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-groq_client = None
+# LangChain imports
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain.chains import LLMChain
 
-if GROQ_API_KEY:
-    try:
-        groq_client = Groq(api_key=GROQ_API_KEY)
-        print(f"GROQ client initialized successfully with key length: {len(GROQ_API_KEY)}")
-    except Exception as e:
-        print(f"Failed to initialize GROQ client: {e}")
-        groq_client = None
-else:
-    print("Warning: GROQ_API_KEY not found. AI features will be disabled.")
+# Initialize LangChain with Groq
+try:
+    llm = ChatGroq(
+        groq_api_key=os.environ.get("GROQ_API_KEY"),
+        model_name="llama-3.1-8b-instant",
+        temperature=0.7,
+        max_tokens=4000
+    )
+    print(f"LangChain GROQ client initialized successfully with key length: {len(os.environ.get('GROQ_API_KEY', ''))}")
+except Exception as e:
+    print(f"Error initializing LangChain GROQ client: {e}")
+    llm = None
+
+# Define output schema for itinerary generation
+class ActivityModel(BaseModel):
+    time: str = Field(description="Time of the activity in HH:MM format")
+    activity: str = Field(description="Name of the activity")
+    location: str = Field(description="Specific location name")
+    duration: str = Field(description="Duration of the activity")
+    cost: float = Field(description="Estimated cost in Indian Rupees")
+    description: str = Field(description="Detailed description of the activity")
+    tips: str = Field(description="Practical tips for Indian tourists")
+
+class ItineraryDay(BaseModel):
+    day: int = Field(description="Day number of the itinerary")
+    activities: List[ActivityModel] = Field(description="List of activities for the day")
+
+class TravelItinerary(BaseModel):
+    destination: str = Field(description="Travel destination")
+    duration: int = Field(description="Trip duration in days")
+    days: List[ItineraryDay] = Field(description="Daily itinerary breakdown")
+    travel_tips: List[str] = Field(description="Helpful travel tips")
+    budget_breakdown: Dict[str, float] = Field(description="Budget allocation by category")
 
 def generate_basic_itinerary(destination, duration, budget, interests):
     """
     Generate a basic itinerary template when AI is not available
     """
-    interests_str = ", ".join(interests) if interests else "sightseeing"
-    daily_budget = budget / duration if duration > 0 else 0
+    interests_str = ", ".join(interests) if interests else "general sightseeing"
     
-    activities_template = [
-        {"time": "09:00", "location": f"{destination} - Morning Attraction", "description": f"Visit popular morning attractions in {destination}", "cost": daily_budget * 0.3},
-        {"time": "12:00", "location": f"{destination} - Local Restaurant", "description": "Lunch at local restaurant", "cost": daily_budget * 0.2},
-        {"time": "14:00", "location": f"{destination} - Main Attraction", "description": f"Explore main attractions related to {interests_str}", "cost": daily_budget * 0.3},
-        {"time": "17:00", "location": f"{destination} - Evening Spot", "description": "Evening leisure activities", "cost": daily_budget * 0.2}
-    ]
+    # Calculate budget breakdown
+    daily_budget = budget / duration if duration > 0 else budget
     
-    days = []
+    basic_itinerary = {
+        "destination": destination,
+        "duration": duration,
+        "days": [],
+        "travel_tips": [
+            f"Pack comfortable walking shoes for exploring {destination}",
+            "Carry a water bottle and stay hydrated",
+            "Try local cuisine but ensure food safety",
+            "Keep emergency contacts and important documents handy",
+            "Respect local customs and traditions"
+        ],
+        "budget_breakdown": {
+            "accommodation": round(budget * 0.35),
+            "food": round(budget * 0.25),
+            "transport": round(budget * 0.20),
+            "activities": round(budget * 0.15),
+            "shopping": round(budget * 0.05)
+        }
+    }
+    
+    # Generate basic daily structure
     for day in range(1, duration + 1):
         day_activities = [
             {
-                "time": activity["time"],
-                "location": activity["location"].replace("Morning", f"Day {day} Morning").replace("Main", f"Day {day} Main"),
-                "description": activity["description"],
-                "cost": activity["cost"]
+                "time": "09:00",
+                "activity": "Morning Exploration",
+                "location": f"Central {destination}",
+                "duration": "3 hours",
+                "cost": daily_budget * 0.3,
+                "description": f"Explore the main attractions of {destination} focusing on {interests_str}",
+                "tips": "Start early to avoid crowds and heat"
+            },
+            {
+                "time": "13:00",
+                "activity": "Local Lunch",
+                "location": "Local Restaurant",
+                "duration": "1 hour",
+                "cost": daily_budget * 0.2,
+                "description": "Try authentic local cuisine",
+                "tips": "Ask locals for restaurant recommendations"
+            },
+            {
+                "time": "15:00",
+                "activity": "Afternoon Activity",
+                "location": f"{destination} Highlights",
+                "duration": "2 hours",
+                "cost": daily_budget * 0.25,
+                "description": f"Continue exploring {destination} based on your interests in {interests_str}",
+                "tips": "Take breaks and stay hydrated"
             }
-            for activity in activities_template
         ]
         
-        days.append({
+        basic_itinerary["days"].append({
             "day": day,
-            "theme": f"Day {day} - Exploring {destination}",
             "activities": day_activities
         })
     
-    return {
-        "destination": destination,
-        "duration": duration,
-        "total_estimated_cost": budget,
-        "overview": f"A {duration}-day basic itinerary for {destination} focusing on {interests_str}. Add your API key for personalized AI-generated itineraries.",
-        "days": days
-    }
+    return basic_itinerary
 
 def generate_travel_itinerary(destination, duration, budget, interests):
     """
-    Generate a detailed travel itinerary using AI for Indian tourists
+    Generate a detailed travel itinerary using LangChain for Indian tourists
     """
-    if not groq_client:
-        print("Groq API key not configured. Using basic itinerary template.")
+    if not llm:
+        logging.warning("LangChain LLM not available, using basic itinerary")
         return generate_basic_itinerary(destination, duration, budget, interests)
     
-    # Initialize budget optimizer
-    budget_optimizer = BudgetOptimizer()
-    optimized_budget = budget_optimizer.get_budget_recommendations(
-        destination, duration, budget, interests
-    )
-    
     try:
+        # Prepare interests string
         interests_str = ", ".join(interests) if interests else "general sightseeing"
         
-        prompt = f"""Create a detailed {duration}-day travel itinerary for Indian tourists visiting {destination} with a budget of ₹{budget}. The traveler is interested in: {interests_str}.
+        # Create system prompt template
+        system_template = """You are an expert travel planner specializing in trips for Indian tourists. 
+        You create detailed, culturally-aware itineraries with accurate costs in Indian Rupees.
+        Always respond with valid JSON that matches the exact schema provided."""
+        
+        # Create human prompt template
+        human_template = """Create a detailed {duration}-day travel itinerary for {destination} for Indian tourists with a budget of ₹{budget}.
 
-CRITICAL PLANNING RULES:
-1. Plan activities in GEOGRAPHICAL SEQUENCE - group nearby attractions together on the same day
-2. Minimize travel time between locations - visit places in logical proximity order
-3. Consider traffic patterns and peak hours for major cities
-4. Start each day from accommodation and plan a circular/efficient route
-5. Include specific landmark names, addresses, opening/closing hours, and realistic travel times between locations
-6. Factor in meal breaks at restaurants near the current location cluster
-7. End each day at a location convenient for returning to accommodation
+Tourist interests: {interests}
 
-IMPORTANT: Respond ONLY with valid JSON. No additional text before or after the JSON.
+Requirements:
+1. Include specific places, timings, and estimated costs in Indian Rupees
+2. Consider Indian cultural preferences and dietary requirements
+3. Include practical tips for Indian travelers
+4. Suggest budget-friendly options and local transportation
+5. Include authentic local experiences and cultural sites
+6. Consider seasonal weather and best visiting times
 
-Required JSON structure:
+Return ONLY a valid JSON object with this exact structure:
 {{
   "destination": "{destination}",
   "duration": {duration},
-  "total_estimated_cost": 25000,
-  "overview": "Brief description of the trip focusing on geographical efficiency",
   "days": [
     {{
       "day": 1,
-      "theme": "Day theme/focus area",
-      "geographical_zone": "Specific area/district being explored",
       "activities": [
         {{
           "time": "09:00",
-          "location": "Specific landmark/attraction name with area",
-          "description": "Detailed activity description with duration",
+          "activity": "Activity name",
+          "location": "Specific location",
+          "duration": "2 hours",
           "cost": 500,
-          "opening_hours": "9:00 AM - 6:00 PM",
-          "travel_time_to_next": "15 minutes",
-          "transportation_mode": "walking/taxi/metro",
+          "description": "Detailed description",
           "tips": "Practical tips for Indian tourists"
         }}
       ]
@@ -115,104 +165,96 @@ Required JSON structure:
   "travel_tips": [
     "Location-specific tips including best travel routes and timing advice"
   ],
-  "budget_breakdown": {json.dumps(optimized_budget['budget_breakdown'], indent=4)}
+  "budget_breakdown": {{
+    "accommodation": 7000,
+    "food": 4000,
+    "transport": 3000,
+    "activities": 4000,
+    "shopping": 2000
+  }}
 }}
 
 Plan each day to cover one geographical area/zone efficiently. Ensure realistic travel times and costs within the specified budget."""
-
-        print(f"Making GROQ API call for {destination}, {duration} days, budget ₹{budget}")
-        response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an expert travel planner specializing in geographically efficient itineraries for Indian tourists. Your priority is creating routes that minimize travel time by grouping nearby attractions together. Plan each day around a specific geographical zone or district. Consider local transportation, traffic patterns, and walking distances. Include specific landmark names, realistic travel times, and practical routing advice. Always respond with valid JSON only."
-                },
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=4000,
-            temperature=0.7
-        )
         
-        content = response.choices[0].message.content
-        if not content:
-            print("Empty response from Groq API")
-            return generate_basic_itinerary(destination, duration, budget, interests)
+        # Create prompt template
+        prompt = ChatPromptTemplate.from_messages([
+            SystemMessagePromptTemplate.from_template(system_template),
+            HumanMessagePromptTemplate.from_template(human_template)
+        ])
         
-        # Clean the content to extract valid JSON
+        # Create chain with LangChain
+        chain = prompt | llm
+        
+        # Execute chain
+        response = chain.invoke({
+            "destination": destination,
+            "duration": duration,
+            "budget": budget,
+            "interests": interests_str
+        })
+        
+        content = response.content.strip()
+        
+        # Extract JSON if wrapped in markdown
+        if '```json' in content:
+            start = content.find('```json') + 7
+            end = content.find('```', start)
+            content = content[start:end].strip()
+        elif '```' in content:
+            start = content.find('```') + 3
+            end = content.find('```', start)
+            content = content[start:end].strip()
+        
         try:
-            # Find JSON block within the response
-            start_idx = content.find('{')
-            end_idx = content.rfind('}') + 1
-            
-            if start_idx != -1 and end_idx > start_idx:
-                json_content = content[start_idx:end_idx]
-                result = json.loads(json_content)
-            else:
-                # If no JSON found, parse the entire content
-                result = json.loads(content)
-            
-            # Validate the response structure
-            if not all(key in result for key in ['destination', 'duration', 'days']):
-                print("Invalid response structure, using fallback")
-                return generate_basic_itinerary(destination, duration, budget, interests)
-            
-            return result
-            
-        except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e}")
-            print(f"Response content preview: {content[:500]}...")
+            itinerary_data = json.loads(content)
+            logging.info(f"Successfully generated LangChain itinerary for {destination}")
+            return itinerary_data
+        except json.JSONDecodeError as json_error:
+            logging.error(f"LangChain JSON decode error: {json_error}")
             return generate_basic_itinerary(destination, duration, budget, interests)
-        
-    except json.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
-        return generate_basic_itinerary(destination, duration, budget, interests)
+            
     except Exception as e:
-        print(f"Error generating itinerary: {e}")
-        return None
+        logging.error(f"LangChain error generating itinerary: {e}")
+        return generate_basic_itinerary(destination, duration, budget, interests)
 
 def get_location_suggestions(query):
     """
-    Get location suggestions based on user input
+    Get location suggestions based on user input using LangChain
     """
-    if not groq_client:
-        print("Groq API key not configured. Cannot get location suggestions.")
-        return {"suggestions": []}
-        
+    if not llm:
+        return []
+    
     try:
-        prompt = f"""Suggest 5 popular travel destinations in India that match the query: "{query}"
-
-Respond with valid JSON in this exact format:
-{{
-  "suggestions": [
-    {{
-      "name": "Destination name",
-      "state": "State name", 
-      "description": "Brief description",
-      "best_time": "Best time to visit"
-    }}
-  ]
-}}"""
+        # Create prompt template for location suggestions
+        suggestion_template = """Based on the query "{query}", suggest 5 popular travel destinations in India.
+        Return ONLY a JSON array of destination names like: ["Mumbai", "Delhi", "Goa", "Kerala", "Rajasthan"]
+        Focus on destinations that match the query or are popular for Indian tourists."""
         
-        response = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a travel expert for Indian destinations. Always respond with valid JSON only."
-                },
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=1000,
-            temperature=0.7
-        )
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a travel expert. Return only valid JSON arrays of Indian destinations."),
+            ("human", suggestion_template)
+        ])
         
-        content = response.choices[0].message.content
-        if not content:
-            return {"suggestions": []}
-            
-        return json.loads(content)
+        # Create chain
+        chain = prompt | llm
+        
+        # Execute chain
+        response = chain.invoke({"query": query})
+        content = response.content.strip()
+        
+        # Extract JSON if wrapped
+        if '```json' in content:
+            start = content.find('```json') + 7
+            end = content.find('```', start)
+            content = content[start:end].strip()
+        elif '```' in content:
+            start = content.find('```') + 3
+            end = content.find('```', start)
+            content = content[start:end].strip()
+        
+        suggestions = json.loads(content)
+        return suggestions if isinstance(suggestions, list) else []
         
     except Exception as e:
-        print(f"Error getting location suggestions: {e}")
-        return {"suggestions": []}
+        logging.error(f"LangChain error getting location suggestions: {e}")
+        return []
