@@ -70,9 +70,13 @@
                                 <i class="fas fa-route me-1"></i>Track
                             </a>
                             <a href="{{ url_for('chatbot', itinerary_id=itinerary.id) }}" 
-                               class="btn btn-info btn-sm">
+                               class="btn btn-info btn-sm me-2">
                                 <i class="fas fa-robot me-1"></i>Assistant
                             </a>
+                            <button onclick="bookWithAgoda('{{ itinerary.destination }}', '{{ itinerary.duration }}')" 
+                                    class="btn btn-warning btn-sm">
+                                <i class="fas fa-bed me-1"></i>Book Stay
+                            </button>
                         </div>
                     </div>
                 </div>
