@@ -27,9 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     console.log('TravelAI App Initialized');
     
-    // Initialize carousel
-    initializeCarousel();
-    
     // Add smooth scrolling to all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
