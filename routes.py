@@ -3,6 +3,7 @@ from app import app, db
 from models import TravelItinerary, Checkpoint
 from ai_service import generate_travel_itinerary
 from weather_service import weather_service
+from chatbot_service import TravelChatbot
 import json
 from datetime import datetime, timedelta
 
@@ -263,6 +264,70 @@ def get_itinerary_checkpoints(itinerary_id):
     except Exception as e:
         app.logger.error(f"Error getting checkpoints for itinerary {itinerary_id}: {e}")
         return jsonify({'error': 'Failed to load checkpoints'}), 500
+
+@app.route('/chatbot')
+@app.route('/chatbot/<int:itinerary_id>')
+def chatbot(itinerary_id=None):
+    """Travel companion chatbot page"""
+    itinerary = None
+    suggestions = []
+    
+    if itinerary_id:
+        itinerary = TravelItinerary.query.get_or_404(itinerary_id)
+        
+        # Generate contextual suggestions
+        chatbot_service = TravelChatbot()
+        context = chatbot_service.get_contextual_suggestions(
+            itinerary.destination, 
+            itinerary.get_interests_list()
+        )
+        suggestions = context.get('suggestions', [])
+    
+    return render_template('chatbot.html', itinerary=itinerary, suggestions=suggestions)
+
+@app.route('/api/chatbot', methods=['POST'])
+def chatbot_api():
+    """API endpoint for chatbot interactions"""
+    try:
+        data = request.get_json()
+        message = data.get('message', '').strip()
+        itinerary_id = data.get('itinerary_id')
+        
+        if not message:
+            return jsonify({'success': False, 'error': 'Message is required'})
+        
+        # Initialize chatbot
+        chatbot_service = TravelChatbot()
+        
+        # Get itinerary context if provided
+        itinerary_context = None
+        user_preferences = None
+        
+        if itinerary_id:
+            itinerary = TravelItinerary.query.get(itinerary_id)
+            if itinerary:
+                itinerary_context = itinerary.get_itinerary_data()
+                user_preferences = itinerary.get_interests_list()
+        
+        # Generate response
+        response = chatbot_service.generate_response(
+            message, 
+            itinerary_context=itinerary_context,
+            user_preferences=user_preferences
+        )
+        
+        return jsonify({
+            'success': True,
+            'response': response,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error in chatbot API: {e}")
+        return jsonify({
+            'success': False, 
+            'error': 'Sorry, I encountered an error processing your message.'
+        })
 
 @app.errorhandler(404)
 def not_found(error):
