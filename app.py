@@ -22,17 +22,8 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET") or "dev-key-change-in-production"
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# configure the database, relative to the app instance folder
-database_url = os.environ.get("DATABASE_URL")
-if database_url:
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-    }
-else:
-    # Fallback to SQLite for development
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///travel_app.db"
+# configure the database - use SQLite for reliable demo
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///travel_app.db"
 
 # initialize the app with the extension
 db.init_app(app)
