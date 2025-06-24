@@ -2,8 +2,14 @@ from flask import render_template, request, redirect, url_for, flash, jsonify
 from app import app, db
 from models import TravelItinerary, Checkpoint
 from ai_service import generate_travel_itinerary
-from weather_service import weather_service
+from weather_service import WeatherService
 from chatbot_service import TravelChatbot
+from agent_coordinator import TravelAgentCoordinator, AgentContext
+
+# Initialize services
+weather_service = WeatherService()
+chatbot = TravelChatbot()
+agent_coordinator = TravelAgentCoordinator()
 import json
 from datetime import datetime, timedelta
 
