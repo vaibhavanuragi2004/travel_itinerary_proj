@@ -1,5 +1,5 @@
-// TravelAI Service Worker
-const CACHE_NAME = 'travelai-v1';
+//  TripCraftAI Service Worker
+const CACHE_NAME = ' TripCraftAI-v1';
 const urlsToCache = [
     '/',
     '/static/css/styles.css',
@@ -36,6 +36,6 @@ self.addEventListener('push', function(event) {
     };
 
     event.waitUntil(
-        self.registration.showNotification('TravelAI Weather Alert', options)
+        self.registration.showNotification(' TripCraftAI Weather Alert', options)
     );
 });

@@ -1,4 +1,4 @@
-// TravelAI JavaScript Application
+//  TripCraftAI JavaScript Application
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize application
     initializeApp();
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const notificationBtn = document.getElementById('enableNotifications');
     if (notificationBtn) {
         notificationBtn.addEventListener('click', function() {
-            window.TravelAI.requestNotificationPermission();
+            window. TripCraftAI.requestNotificationPermission();
         });
     }
 });
@@ -43,15 +43,15 @@ window.bookWithAgoda = function(destination, duration) {
         '&checkOut=' + formatDate(checkOut) + 
         '&rooms=1&adults=2&children=0' +
         '&cid=1844104' +
-        '&tag=travelai' +
-        '&utm_source=travelai&utm_medium=referral&utm_campaign=partnership';
+        '&tag= TripCraftAI' +
+        '&utm_source= TripCraftAI&utm_medium=referral&utm_campaign=partnership';
     
     console.log('Agoda booking clicked:', {destination, duration, url: agodaUrl});
     window.open(agodaUrl, '_blank');
 };
 
 function initializeApp() {
-    console.log('TravelAI App Initialized');
+    console.log(' TripCraftAI App Initialized');
     
     // Add smooth scrolling to all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Export functions for global access
-window.TravelAI = {
+window. TripCraftAI = {
     showAlert,
     validateForm,
     handleCheckpointCompletion,
