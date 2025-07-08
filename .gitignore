@@ -1,0 +1,21 @@
+# Ignore Python virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Ignore environment variables
+.env
+
+# Ignore node_modules (for frontend JS dependencies)
+node_modules/
+
+# Ignore config/secrets
+instance/
+.config/
+
+# Ignore VS Code workspace settings (optional)
+.vscode/
+
+# Ignore lock files (optional but common)
+package-lock.json
+uv.lock
