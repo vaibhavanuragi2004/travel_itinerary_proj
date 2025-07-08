@@ -5,6 +5,10 @@ from ai_service import generate_travel_itinerary
 from weather_service import WeatherService
 from chatbot_service import TravelChatbot
 from agent_coordinator import TravelAgentCoordinator, AgentContext
+from ai_service import get_station_code
+from typing import Optional
+from fpdf import FPDF # <-- ADD THIS IMPORT
+from flask import Response
 
 # Initialize services
 weather_service = WeatherService()
@@ -16,6 +20,22 @@ from datetime import datetime, timedelta
 @app.route('/')
 def index():
     return render_template('index.html')
+# Add this new route to your routes.py file
+# Make sure to import the new function at the top of routes.py
+
+@app.route('/api/get-station-code', methods=['POST'])
+def api_get_station_code():
+    data = request.get_json()
+    city_name = data.get('city')
+    if not city_name:
+        return jsonify({'error': 'City name is required'}), 400
+
+    station_code = get_station_code(city_name)
+    
+    if station_code:
+        return jsonify({'city': city_name, 'code': station_code})
+    else:
+        return jsonify({'error': f'Station code not found for {city_name}'}), 404
 
 @app.route('/generate_itinerary', methods=['POST'])
 def generate_itinerary():
@@ -319,3 +339,116 @@ def not_found(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+
+# Add this new function inside routes.py
+
+# Add this new route to your routes.py file
+
+@app.route('/itinerary/<int:itinerary_id>/download')
+def download_itinerary_pdf(itinerary_id):
+    # 1. Fetch the data from the database (this logic is unchanged)
+    itinerary = TravelItinerary.query.get_or_404(itinerary_id)
+    checkpoints = Checkpoint.query.filter_by(itinerary_id=itinerary_id).order_by(Checkpoint.day, Checkpoint.time).all()
+    
+    days_data = {}
+    for checkpoint in checkpoints:
+        if checkpoint.day not in days_data:
+            days_data[checkpoint.day] = []
+        days_data[checkpoint.day].append(checkpoint)
+
+    # 2. Generate the PDF using our NEW FPDF2 function
+    pdf_data = create_itinerary_pdf(itinerary, days_data) # This call now uses the new function
+
+    # 3. Create a Flask Response (this logic is unchanged)
+    return Response(
+        pdf_data,
+        mimetype='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment;filename={itinerary.destination.lower().replace(" ", "_")}_itinerary.pdf'
+        }
+    )
+
+
+class PDF(FPDF):
+    def header(self):
+        # Set font for the header
+        self.set_font('Helvetica', 'B', 15)
+        # Move to the right
+        self.cell(80)
+        # Title
+        self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
+        # Line break
+        self.ln(20)
+
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Set font for the footer
+        self.set_font('Helvetica', 'I', 8)
+        # Page number
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+# --- NEW PDF GENERATION CODE USING FPDF2 ---
+
+class PDF(FPDF):
+    def header(self):
+        # Set font for the header
+        self.set_font('Helvetica', 'B', 15)
+        # Move to the right
+        self.cell(80)
+        # Title
+        self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
+        # Line break
+        self.ln(20)
+
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Set font for the footer
+        self.set_font('Helvetica', 'I', 8)
+        # Page number
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+def create_itinerary_pdf(itinerary, days_data):
+    """Generates a PDF document for the itinerary using FPDF2."""
+    
+    pdf = PDF()
+    pdf.add_page()
+    
+    # --- Itinerary Header ---
+    pdf.set_font('Helvetica', 'B', 24)
+    pdf.cell(0, 10, f'{itinerary.destination}', 0, 1, 'L')
+    
+    pdf.set_font('Helvetica', '', 12)
+    pdf.cell(0, 10, f"{itinerary.duration} Days | Budget: Rs {itinerary.budget:,.0f} | Created: {itinerary.created_at.strftime('%b %d, %Y')}", 0, 1, 'L')
+    pdf.ln(10)
+
+    # --- Itinerary Timeline ---
+    for day_num in range(1, itinerary.duration + 1):
+        day_data = days_data.get(day_num, [])
+        
+        pdf.set_font('Helvetica', 'B', 16)
+        pdf.cell(0, 10, f'Day {day_num}', 0, 1, 'L')
+        pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y()) # Underline
+        pdf.ln(5)
+        
+        if day_data:
+            for checkpoint in day_data:
+                pdf.set_font('Helvetica', 'B', 12)
+                pdf.cell(0, 8, f"{checkpoint.time} - {checkpoint.location}", 0, 1)
+                
+                pdf.set_font('Helvetica', '', 12)
+                # Use multi_cell for text that can wrap
+                pdf.multi_cell(0, 8, f"Activity: {checkpoint.activity}")
+                
+                if checkpoint.estimated_cost > 0:
+                    pdf.cell(0, 8, f"Est. Cost: Rs {checkpoint.estimated_cost:,.0f}", 0, 1)
+                pdf.ln(5) # Add a little space between checkpoints
+        else:
+            pdf.set_font('Helvetica', 'I', 12)
+            pdf.cell(0, 10, 'No activities planned for this day.', 0, 1)
+            pdf.ln(5)
+            
+    # .output() returns the PDF data. 'S' means as a string/bytes.
+    # We encode it to latin-1 as per fpdf2's recommendation for byte output.
+    return bytes(pdf.output(dest='S'))
+

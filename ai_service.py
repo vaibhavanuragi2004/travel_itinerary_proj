@@ -1,7 +1,7 @@
 import json
 import os
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 # LangChain imports
 from langchain_groq import ChatGroq
@@ -258,3 +258,34 @@ def get_location_suggestions(query):
     except Exception as e:
         logging.error(f"LangChain error getting location suggestions: {e}")
         return []
+
+# Add this new function to your ai_service.py file
+
+def get_station_code(city_name: str) -> Optional[str]:
+    """
+    Uses the LLM to find the primary Indian Railways station code for a given city.
+    """
+    if not llm:
+        return None
+
+    try:
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are an Indian Railways expert. Your task is to provide the primary, most common railway station code for a given Indian city. Respond with ONLY the station code in uppercase. For example, for 'New Delhi' respond with 'NDLS'. For 'Kolkata' respond with 'HWH'. If you cannot find a code, respond with 'None'."),
+            ("human", "City: {city}")
+        ])
+
+        chain = prompt | llm
+        response = chain.invoke({"city": city_name})
+        
+        code = response.content.strip().upper()
+
+        if code.lower() == 'none' or len(code) > 6: # Basic validation
+            logging.warning(f"Could not find a valid station code for '{city_name}'.")
+            return None
+        
+        logging.info(f"Found station code '{code}' for city '{city_name}'.")
+        return code
+
+    except Exception as e:
+        logging.error(f"Error getting station code for '{city_name}': {e}")
+        return None        

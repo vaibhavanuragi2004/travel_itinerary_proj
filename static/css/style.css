@@ -1,8 +1,8 @@
 /* Custom CSS Variables for Indian Travel Theme */
 :root {
     --primary: 255 107 53; /* #FF6B35 - vibrant orange */
-    --secondary: 0 78 137; /* #004E89 - deep blue */
-    --accent: 255 210 63; /* #FFD23F - golden yellow */
+    --secondary: 245 245 220; /* #F5F5DC - beige */
+    --accent: 139 69 19;      /* #8B4513 - brown */
     --background: 248 249 250; /* #F8F9FA - light grey */
     --text: 44 62 80; /* #2C3E50 - dark blue-grey */
     --success: 39 174 96; /* #27AE60 - green */
