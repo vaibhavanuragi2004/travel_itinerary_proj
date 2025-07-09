@@ -1,5 +1,5 @@
-
-git clone <your-repository-url>
+**
+git clone ---url----
 cd travelitineraryproj
 
 # Create the virtual environment
