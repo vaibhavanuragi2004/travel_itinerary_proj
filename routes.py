@@ -9,6 +9,7 @@ from ai_service import get_station_code
 from typing import Optional
 from fpdf import FPDF # <-- ADD THIS IMPORT
 from flask import Response
+from recommendation_service import RecommendationService
 
 # Initialize services
 weather_service = WeatherService()
@@ -452,3 +453,18 @@ def create_itinerary_pdf(itinerary, days_data):
     # We encode it to latin-1 as per fpdf2's recommendation for byte output.
     return bytes(pdf.output(dest='S'))
 
+# At the top of routes.py, add the import
+
+
+# Initialize the service (can be done once when the app starts)
+recommendation_service = RecommendationService()
+
+@app.route('/recommendations')
+def recommendations():
+    # In a real app with user logins, you would pass the current user's ID
+    # recommended_destinations = recommendation_service.get_recommendations(user_id=current_user.id)
+    
+    # For now, we'll get recommendations based on the general history
+    recommended_destinations = recommendation_service.get_recommendations()
+    
+    return render_template('recommendations.html', recommendations=recommended_destinations)
