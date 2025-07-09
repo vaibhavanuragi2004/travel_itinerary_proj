@@ -1,56 +1,81 @@
-/* Custom CSS Variables for Indian Travel Theme */
+/* Beige & Brown Color Theme */
 :root {
-    --primary: 255 107 53; /* #FF6B35 - vibrant orange */
-    --secondary: 245 245 220; /* #F5F5DC - beige */
-    --accent: 139 69 19;      /* #8B4513 - brown */
-    --background: 248 249 250; /* #F8F9FA - light grey */
-    --text: 44 62 80; /* #2C3E50 - dark blue-grey */
-    --success: 39 174 96; /* #27AE60 - green */
+    --primary: 139 69 19;
+    /* #8B4513 - Saddle Brown */
+    --secondary: 160 82 45;
+    /* #A0522D - Sienna */
+    --accent: 245 222 179;
+    /* #F5DEB3 - Wheat */
+    --background: 245 245 220;
+    /* #F5F5DC - Beige */
+    --text: 101 67 33;
+    /* #654321 - Dark Brown */
+    --success: 205 133 63;
+    /* #CD853F - Peru */
     --spacing: 16px;
+
+    /* Additional beige/brown palette */
+    --beige-light: 250 240 230;
+    /* #FAF0E6 - Linen */
+    --beige-medium: 245 222 179;
+    /* #F5DEB3 - Wheat */
+    --brown-light: 210 180 140;
+    /* #D2B48C - Tan */
+    --brown-dark: 139 69 19;
+    /* #8B4513 - Saddle Brown */
+    --chocolate: 210 105 30;
+    /* #D2691E - Chocolate */
 }
 
 /* Base Styles */
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: hsl(var(--background));
-    color: hsl(var(--text));
+    background-color: rgb(var(--beige-light));
+    color: rgb(var(--text));
     line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
 
 /* Custom Bootstrap Color Classes */
 .bg-primary {
-    background-color: hsl(var(--primary)) !important;
+    background-color: rgb(var(--primary)) !important;
 }
 
 .text-primary {
-    color: hsl(var(--primary)) !important;
+    color: rgb(var(--primary)) !important;
 }
 
 .btn-primary {
-    background-color: hsl(var(--primary));
-    border-color: hsl(var(--primary));
-    color: white;
+    background-color: rgb(var(--primary));
+    border-color: rgb(var(--primary));
+    color: rgb(var(--beige-light));
 }
 
 .btn-primary:hover {
-    background-color: hsl(var(--primary) / 0.9);
-    border-color: hsl(var(--primary) / 0.9);
+    background-color: rgb(var(--brown-dark));
+    border-color: rgb(var(--brown-dark));
+    color: rgb(var(--beige-light));
 }
 
 .btn-outline-primary {
-    color: hsl(var(--primary));
-    border-color: hsl(var(--primary));
+    color: rgb(var(--primary));
+    border-color: rgb(var(--primary));
+    background-color: transparent;
 }
 
 .btn-outline-primary:hover {
-    background-color: hsl(var(--primary));
-    border-color: hsl(var(--primary));
-    color: white;
+    background-color: rgb(var(--primary));
+    border-color: rgb(var(--primary));
+    color: rgb(var(--beige-light));
 }
 
 /* Drag and Drop Styles */
@@ -84,12 +109,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .sortable-chosen {
     transform: rotate(2deg);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .sortable-drag {
     transform: rotate(5deg);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .opening-hours {
@@ -102,16 +127,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .travel-info {
     padding: 4px 8px;
-    background-color: rgba(13, 110, 253, 0.1);
+    background-color: rgba(139, 69, 19, 0.1);
     border-radius: 4px;
-    border-left: 3px solid #0d6efd;
+    border-left: 3px solid #8B4513;
 }
 
 .travel-tips {
     padding: 4px 8px;
-    background-color: rgba(25, 135, 84, 0.1);
+    background-color: rgba(205, 133, 63, 0.1);
     border-radius: 4px;
-    border-left: 3px solid #198754;
+    border-left: 3px solid #CD853F;
 }
 
 .checkpoint-card {
@@ -124,7 +149,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .checkpoint-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sortable-checkpoints {
@@ -149,38 +174,47 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     margin-bottom: 30px;
     padding: 20px;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
     border-radius: 15px;
-    color: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    color: #FAF0E6;
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.2);
+    border: 2px solid #F5DEB3;
 }
 
 .day-circle {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: white;
+    background: linear-gradient(135deg, #FAF0E6, #F5DEB3);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    border: 3px solid #8B4513;
 }
 
 .day-number {
     font-size: 2rem;
     font-weight: bold;
-    color: hsl(var(--primary));
+    color: #8B4513;
+    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
 }
 
 .day-info {
     flex: 1;
+    color: #F5DEB3 !important;
+}
+
+.day-info h4 {
+    color: #F5DEB3 !important;
 }
 
 .day-title {
     margin: 0;
     font-size: 1.8rem;
     font-weight: 600;
+    color: #F5DEB3 !important;
 }
 
 .day-progress-info {
@@ -190,22 +224,25 @@ h1, h2, h3, h4, h5, h6 {
 .progress-text {
     font-size: 0.9rem;
     opacity: 0.9;
+    color: #F5DEB3 !important;
 }
 
 .progress-bar-custom {
     width: 200px;
-    height: 6px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 3px;
+    height: 8px;
+    background: rgba(245, 222, 179, 0.3);
+    border-radius: 4px;
     margin-top: 5px;
     overflow: hidden;
+    border: 1px solid rgba(245, 222, 179, 0.5);
 }
 
 .progress-fill {
     height: 100%;
-    background: hsl(var(--accent));
+    background: linear-gradient(90deg, #F5DEB3, #D2B48C);
     border-radius: 3px;
     transition: width 0.3s ease;
+    box-shadow: 0 1px 3px rgba(139, 69, 19, 0.2);
 }
 
 .timeline-activities {
@@ -220,8 +257,9 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(to bottom, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(to bottom, #8B4513, #A0522D, #CD853F, #F5DEB3);
     border-radius: 2px;
+    box-shadow: 0 0 4px rgba(139, 69, 19, 0.3);
 }
 
 .timeline-item {
@@ -242,21 +280,36 @@ h1, h2, h3, h4, h5, h6 {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: white;
-    border: 4px solid hsl(var(--primary));
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    border: 4px solid #F5DEB3;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     z-index: 2;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
     transition: all 0.3s ease;
+    color: #FAF0E6;
+    font-size: 1.2rem;
 }
 
 .marker-dot.completed {
-    background: hsl(var(--success));
-    border-color: hsl(var(--success));
-    color: white;
+    background: linear-gradient(135deg, #CD853F, #A0522D);
+    border-color: #8B4513;
+    color: #FAF0E6;
+    box-shadow: 0 4px 15px rgba(205, 133, 63, 0.4);
+}
+
+.marker-dot::before {
+    content: '\f3c5';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+.marker-dot.completed::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
 }
 
 .marker-time {
@@ -297,7 +350,7 @@ h1, h2, h3, h4, h5, h6 {
     background: white;
     border-radius: 15px;
     padding: 25px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     border: 1px solid #f0f0f0;
     transition: all 0.3s ease;
     position: relative;
@@ -311,12 +364,12 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(90deg, #8B4513, #A0522D, #CD853F, #F5DEB3);
 }
 
 .activity-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 .activity-header {
@@ -434,9 +487,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0);
+    }
 }
 
 .timeline-empty {
@@ -462,38 +523,38 @@ h1, h2, h3, h4, h5, h6 {
     .timeline-container {
         padding: 10px;
     }
-    
+
     .day-header-timeline {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .day-circle {
         margin-right: 0;
         margin-bottom: 15px;
     }
-    
+
     .timeline-activities {
         padding-left: 30px;
     }
-    
+
     .timeline-activities::before {
         left: 15px;
     }
-    
+
     .marker-dot {
         width: 40px;
         height: 40px;
     }
-    
+
     .activity-card {
         padding: 20px;
     }
-    
+
     .completion-form .form-group {
         flex-direction: column;
     }
-    
+
     .completion-form .form-control {
         margin-bottom: 10px;
     }
@@ -545,6 +606,47 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--spacing);
 }
 
+/* Fix yellow colors in hero section icons and features */
+.feature-icon {
+    background: linear-gradient(135deg, #8B4513, #CD853F) !important;
+    color: #FAF0E6 !important;
+}
+
+/* Override any yellow backgrounds in the hero section */
+.hero-section .bg-warning,
+.hero-section .text-warning,
+.hero-section [style*="yellow"],
+.hero-section [style*="#ffff"],
+.hero-section [style*="rgb(255, 255"] {
+    background: linear-gradient(135deg, #CD853F, #A0522D) !important;
+    color: #FAF0E6 !important;
+}
+
+/* Specific override for AI feature icons */
+.feature-card .feature-icon,
+.hero-section .feature-icon,
+.ai-feature-icon {
+    background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+    border: 3px solid #F5DEB3 !important;
+    color: #FAF0E6 !important;
+}
+
+/* Override all yellow/warning colored elements */
+.bg-warning,
+.text-warning,
+.badge.bg-warning,
+.alert-warning,
+[style*="background-color: yellow"],
+[style*="background: yellow"],
+[style*="background-color: #ffc107"],
+[style*="background: #ffc107"],
+[style*="color: yellow"],
+[style*="color: #ffc107"] {
+    background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+    color: #FAF0E6 !important;
+    border-color: #F5DEB3 !important;
+}
+
 /* Form Styles */
 .form-check-card {
     background: white;
@@ -561,7 +663,7 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
 }
 
-.form-check-card .form-check-input:checked ~ .form-check-label {
+.form-check-card .form-check-input:checked~.form-check-label {
     color: hsl(var(--primary));
     font-weight: 600;
 }
@@ -1021,32 +1123,68 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
 }
 
+/* Fix any yellow budget colors and amount displays */
+.budget-amount,
+.budget-amount[style*="yellow"],
+.budget-amount[style*="#ffff"],
+.budget-amount[style*="rgb(255, 255"],
+.activity-cost,
+.checkpoint-cost {
+    background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+    color: #FAF0E6 !important;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid #F5DEB3;
+}
+
+/* Budget card specific overrides */
+.budget-card .text-warning,
+.budget-card .bg-warning,
+.budget-display .text-warning,
+.budget-display .bg-warning,
+.itinerary-summary-card .badge {
+    background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+    color: #FAF0E6 !important;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Currency display override */
+.currency-display,
+.budget-total,
+.cost-display {
+    color: #8B4513 !important;
+    font-weight: 700;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-features {
         flex-direction: column;
     }
-    
+
     .stats-grid {
         justify-content: center;
         margin-top: 1rem;
     }
-    
+
     .checkpoint-header {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .timeline-header {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .map-legend {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .card-actions {
         flex-direction: column;
     }
@@ -1068,6 +1206,7 @@ h1, h2, h3, h4, h5, h6 {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1095,4 +1234,464 @@ h1, h2, h3, h4, h5, h6 {
 
 .live-updates::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary) / 0.8);
+}
+
+/* Itinerary Styles */
+.day-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+}
+
+.day-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.day-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-number {
+    background: hsl(var(--secondary));
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.day-progress {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.day-content {
+    padding: 1.5rem;
+}
+
+.checkpoint-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.checkpoint-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.checkpoint-card.completed {
+    border-color: hsl(var(--success));
+    background: hsl(var(--success) / 0.05);
+}
+
+.checkpoint-time {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-location {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.checkpoint-cost {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.checkpoint-description {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.checkpoint-completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.checkpoint-form {
+    margin-top: 1rem;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: hsl(var(--success));
+    color: white;
+}
+
+.timeline-item.pending .timeline-marker {
+    background: hsl(var(--primary));
+    color: white;
+}
+
+.timeline-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.timeline-time {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.timeline-description {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-cost {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.timeline-status.completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    color: hsl(var(--success));
+}
+
+/* Tracking Styles */
+.current-status-card {
+    background: white;
+    border-radius: var(--spacing);
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.current-location {
+    margin-top: 0.5rem;
+}
+
+.location-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--text));
+}
+
+.location-time {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.map-container {
+    height: 400px;
+    background: #f8f9fa;
+    border-radius: 0 0 var(--spacing) var(--spacing);
+    position: relative;
+}
+
+.map-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--primary) / 0.05));
+}
+
+.map-content {
+    text-align: center;
+}
+
+.map-legend {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.completed {
+    background: hsl(var(--success));
+}
+
+.legend-dot.current {
+    background: hsl(var(--primary));
+}
+
+.legend-dot.pending {
+    background: #e9ecef;
+}
+
+.live-updates {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.update-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.update-item:last-child {
+    border-bottom: none;
+}
+
+.update-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.update-message {
+    flex: 1;
+    font-size: 0.875rem;
+}
+/* Itinerary Styles */
+.day-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+}
+
+.day-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.day-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-number {
+    background: hsl(var(--secondary));
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.day-progress {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.day-content {
+    padding: 1.5rem;
+}
+
+.checkpoint-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.checkpoint-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.checkpoint-card.completed {
+    border-color: hsl(var(--success));
+    background: hsl(var(--success) / 0.05);
+}
+
+.checkpoint-time {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-location {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.checkpoint-cost {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.checkpoint-description {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.checkpoint-completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.checkpoint-form {
+    margin-top: 1rem;
+}
+
+section.bg-primary h1,
+section.bg-primary h1 .fas {
+    color: #FFFFFF !important; /* Using pure white for best readability on brown */
+    opacity: 1;
+}
+
+/* 2. Style the Weather Widget with a beige background */
+.weather-widget {
+    background: var(--accent) !important; /* Uses the beige/wheat color from your theme */
+    color: var(--primary) !important;     /* Makes all text inside dark brown */
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.1);
+}
+
+/* 3. Adjust the "Current Weather" title and Refresh button inside the widget */
+.weather-widget h5 {
+    color: var(--primary) !important;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.weather-widget .btn-light {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.weather-widget .btn-light:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+
+/* 4. Layout for the action buttons ("Track Progress", etc.) */
+.header-actions {
+    display: flex;
+    flex-direction: column;  /* Stack buttons vertically */
+    align-items: flex-end;   /* Align them to the right side */
+    gap: 12px;               /* This creates the even separation */
+}
+
+/* 5. Make both buttons the same width */
+.header-actions .btn {
+    width: 220px;            /* Set a consistent width for both buttons */
+    min-width: 220px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

@@ -87,11 +87,11 @@ const WeatherWidget = ({ destination }) => {
     return (
         <div className="card border-0 shadow-sm">
             <div className="card-header bg-primary text-white">
-                <h6 className="mb-0">
-                    <i className="fas fa-cloud-sun me-2"></i>
-                    Current Weather
-                </h6>
-            </div>
+    <h6 className="mb-0">
+        <i className="fas fa-cloud-sun me-2"></i>
+        Current Weather
+    </h6>
+</div>
             <div className="card-body">
                 <div className="row align-items-center">
                     <div className="col-6">

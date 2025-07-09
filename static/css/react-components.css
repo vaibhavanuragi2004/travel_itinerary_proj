@@ -1,23 +1,23 @@
 /* React Component Styles */
 
-/* Interest Cards */
+/* Interest Cards - Beige & Brown Theme */
 .interest-card {
     transition: all 0.3s ease;
-    border: 2px solid #e9ecef;
-    background: #f8f9fa;
+    border: 2px solid #F5DEB3;
+    background: #FAF0E6;
     cursor: pointer;
 }
 
 .interest-card:hover {
-    border-color: #0d6efd;
+    border-color: #8B4513;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.15);
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.15);
 }
 
 .interest-card.selected {
-    border-color: #0d6efd;
-    background: #0d6efd;
-    color: white;
+    border-color: #8B4513;
+    background: #8B4513;
+    color: #FAF0E6;
 }
 
 /* Suggestion Items */
@@ -26,7 +26,7 @@
 }
 
 .suggestion-item:hover {
-    background-color: #f8f9fa;
+    background-color: #F5DEB3;
 }
 
 /* Timeline Styles for React Components */
@@ -47,7 +47,7 @@
     top: 40px;
     bottom: -30px;
     width: 2px;
-    background: #dee2e6;
+    background: #F5DEB3;
 }
 
 .timeline-marker {
@@ -64,28 +64,29 @@
 }
 
 .timeline-marker.bg-success {
-    background: #198754;
+    background: #CD853F;
 }
 
 .timeline-marker.bg-warning {
-    background: #ffc107;
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    color: #FAF0E6;
 }
 
 .timeline-marker.bg-secondary {
-    background: #6c757d;
+    background: #A0522D;
 }
 
 .timeline-content {
     background: white;
-    border: 1px solid #dee2e6;
+    border: 1px solid #F5DEB3;
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
 }
 
 /* Update Items */
 .update-item {
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #F5DEB3;
     padding: 10px 0;
 }
 
@@ -100,11 +101,11 @@
 
 /* Form Validation */
 .is-invalid {
-    border-color: #dc3545;
+    border-color: #8B4513;
 }
 
 .invalid-feedback {
-    color: #dc3545;
+    color: #8B4513;
     font-size: 0.875rem;
     margin-top: 0.25rem;
 }
@@ -115,16 +116,68 @@
     height: 1rem;
 }
 
+/* Additional Beige & Brown Theme Components */
+.weather-widget {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    color: #FAF0E6;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+}
+
+.checkpoint-tracker {
+    background: white;
+    border: 1px solid #F5DEB3;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
+}
+
+.checkpoint-tracker .day-header {
+    background: linear-gradient(135deg, #8B4513, #A0522D);
+    color: #FAF0E6;
+}
+
+.checkpoint-tracker .checkpoint-item {
+    border-bottom: 1px solid #F5DEB3;
+}
+
+.checkpoint-tracker .checkpoint-item:hover {
+    background-color: #FAF0E6;
+}
+
+.checkpoint-tracker .checkpoint-completed {
+    background-color: rgba(205, 133, 63, 0.1);
+    border-left: 4px solid #CD853F;
+}
+
+.itinerary-form {
+    background: white;
+    border: 1px solid #F5DEB3;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(139, 69, 19, 0.1);
+}
+
+.destination-suggestion {
+    background-color: white;
+    border: 1px solid #F5DEB3;
+    border-radius: 8px;
+}
+
+.destination-suggestion:hover {
+    background-color: #FAF0E6;
+    border-color: #8B4513;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .timeline {
         padding-left: 20px;
     }
-    
+
     .timeline-marker {
         left: -20px;
     }
-    
+
     .timeline-item:not(:last-child)::before {
         left: -13px;
     }
