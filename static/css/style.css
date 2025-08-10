@@ -1659,10 +1659,10 @@ section.bg-primary h1 .fas {
 }
 
 /* 3. Adjust the "Current Weather" title and Refresh button inside the widget */
-.weather-widget h5 {
-    color: var(--primary) !important;
-    font-weight: 600;
-    opacity: 0.8;
+/* 3. Adjust the "Current Weather" title and Refresh button inside the widget */
+/* This selector is specific enough to override the .text-white utility */
+.weather-widget .card-header.bg-primary h6 {
+    color: beige !important;
 }
 
 .weather-widget .btn-light {

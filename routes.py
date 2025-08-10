@@ -370,25 +370,25 @@ def download_itinerary_pdf(itinerary_id):
     )
 
 
-class PDF(FPDF):
-    def header(self):
-        # Set font for the header
-        self.set_font('Helvetica', 'B', 15)
-        # Move to the right
-        self.cell(80)
-        # Title
-        self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
-        # Line break
-        self.ln(20)
+# class PDF(FPDF):
+#     def header(self):
+#         # Set font for the header
+#         self.set_font('Helvetica', 'B', 15)
+#         # Move to the right
+#         self.cell(80)
+#         # Title
+#         self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
+#         # Line break
+#         self.ln(20)
 
-    def footer(self):
-        # Position at 1.5 cm from bottom
-        self.set_y(-15)
-        # Set font for the footer
-        self.set_font('Helvetica', 'I', 8)
-        # Page number
-        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
-# --- NEW PDF GENERATION CODE USING FPDF2 ---
+#     def footer(self):
+#         # Position at 1.5 cm from bottom
+#         self.set_y(-15)
+#         # Set font for the footer
+#         self.set_font('Helvetica', 'I', 8)
+#         # Page number
+#         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+# # --- NEW PDF GENERATION CODE USING FPDF2 ---
 
 class PDF(FPDF):
     def header(self):
@@ -410,16 +410,19 @@ class PDF(FPDF):
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
 def create_itinerary_pdf(itinerary, days_data):
-    """Generates a PDF document for the itinerary using FPDF2."""
+    """Generates a PDF document for the itinerary, handling potential Unicode errors."""
     
     pdf = PDF()
     pdf.add_page()
     
     # --- Itinerary Header ---
     pdf.set_font('Helvetica', 'B', 24)
-    pdf.cell(0, 10, f'{itinerary.destination}', 0, 1, 'L')
+    # Sanitize the destination text
+    destination_text = f'{itinerary.destination}'.encode('latin-1', 'replace').decode('latin-1')
+    pdf.cell(0, 10, destination_text, 0, 1, 'L')
     
     pdf.set_font('Helvetica', '', 12)
+    # The f-string here contains only safe characters, so no encoding needed
     pdf.cell(0, 10, f"{itinerary.duration} Days | Budget: Rs {itinerary.budget:,.0f} | Created: {itinerary.created_at.strftime('%b %d, %Y')}", 0, 1, 'L')
     pdf.ln(10)
 
@@ -429,30 +432,31 @@ def create_itinerary_pdf(itinerary, days_data):
         
         pdf.set_font('Helvetica', 'B', 16)
         pdf.cell(0, 10, f'Day {day_num}', 0, 1, 'L')
-        pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y()) # Underline
+        pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y())
         pdf.ln(5)
         
         if day_data:
             for checkpoint in day_data:
                 pdf.set_font('Helvetica', 'B', 12)
-                pdf.cell(0, 8, f"{checkpoint.time} - {checkpoint.location}", 0, 1)
+                # Sanitize location and time text
+                checkpoint_header = f"{checkpoint.time} - {checkpoint.location}".encode('latin-1', 'replace').decode('latin-1')
+                pdf.cell(0, 8, checkpoint_header, 0, 1)
                 
                 pdf.set_font('Helvetica', '', 12)
-                # Use multi_cell for text that can wrap
-                pdf.multi_cell(0, 8, f"Activity: {checkpoint.activity}")
+                # Sanitize activity text for multi_cell
+                activity_text = f"Activity: {checkpoint.activity}".encode('latin-1', 'replace').decode('latin-1')
+                pdf.multi_cell(0, 8, activity_text)
                 
                 if checkpoint.estimated_cost > 0:
                     pdf.cell(0, 8, f"Est. Cost: Rs {checkpoint.estimated_cost:,.0f}", 0, 1)
-                pdf.ln(5) # Add a little space between checkpoints
+                pdf.ln(5)
         else:
             pdf.set_font('Helvetica', 'I', 12)
             pdf.cell(0, 10, 'No activities planned for this day.', 0, 1)
             pdf.ln(5)
             
-    # .output() returns the PDF data. 'S' means as a string/bytes.
-    # We encode it to latin-1 as per fpdf2's recommendation for byte output.
-    return bytes(pdf.output(dest='S'))
-
+    # This final conversion is correct. The problem was the data being written *before* this.
+    return bytes(pdf.output())
 # At the top of routes.py, add the import
 
 
